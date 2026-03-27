@@ -5,10 +5,8 @@ import type { StatDisplayProps } from './components/Navbar/StatsDisplay';
 import Canvas from './components/Canvas/Canvas';
 import LeftPanel from './components/LeftPanel/LeftPanel';
 import RightPanel from './components/RightPanel/RightPanel';
-import { useMode } from './components/LeftPanel/ModeContext';
 
 const App = () => {
-  const { mode } = useMode();
   const [stats, setStats] = useState<StatDisplayProps>({
     count: 0,
     fps: 0,
