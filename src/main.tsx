@@ -1,18 +1,21 @@
 // Import styles
-import "./styles/styles.css";
+import './styles/styles.css';
 
 // Import react
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 
 // Import Components
-import App from "./App.tsx";
-import { ModeProvider } from "./components/LeftPanel/ModeContextProvider";
+import App from './App.tsx';
+import { ModeProvider } from './components/LeftPanel/ModeProvider';
+import { QTLiveViewProvider } from './components/RightPanel/QTLiveViewProvider.tsx';
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ModeProvider>
-      <App />
+      <QTLiveViewProvider>
+        <App />
+      </QTLiveViewProvider>
     </ModeProvider>
-  </StrictMode>,
+  </StrictMode>
 );

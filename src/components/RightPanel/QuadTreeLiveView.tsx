@@ -1,20 +1,18 @@
 // src/components/RightPanel/QuadTreeLiveView.tsx
-import React, { useRef, useEffect } from "react";
-import type { LiveViewData } from "../Canvas/useParticleSystem";
+import React, { useRef, useEffect } from 'react';
+import { useQTLiveView } from './QTLiveViewContext';
 
-interface QuadTreeLiveViewProps {
-  liveData: LiveViewData;
-}
+const QuadTreeLiveView: React.FC<QuadTreeLiveViewProps> = () => {
+  const { liveViewData } = useQTLiveView();
 
-const QuadTreeLiveView: React.FC<QuadTreeLiveViewProps> = ({ liveData }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { quadTree, particles, bounds } = liveData;
+  const qtCanvasRef = useRef<HTMLCanvasElement>(null);
+  const { quadTree, particles, bounds } = liveViewData;
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = qtCanvasRef.current;
     if (!canvas || !quadTree || !particles || !bounds) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     // Set canvas dimensions based on its display size for high-DPI rendering
@@ -35,10 +33,10 @@ const QuadTreeLiveView: React.FC<QuadTreeLiveViewProps> = ({ liveData }) => {
     quadTree.draw(ctx);
 
     // Draw the particles
-    ctx.fillStyle = "rgba(56,200,168,0.7)";
+    ctx.fillStyle = 'rgba(56,200,168,0.7)';
     for (const p of particles) {
       ctx.beginPath();
-      ctx.arc(p.position.x, p.position.y, 2.5, 0, Math.PI * 2); // Slightly larger dots for visibility
+      ctx.arc(p.position.x, p.position.y, 2.5, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
@@ -46,7 +44,7 @@ const QuadTreeLiveView: React.FC<QuadTreeLiveViewProps> = ({ liveData }) => {
 
   return (
     <div className="border-base-300 bg-base-100 mb-3.5 aspect-square overflow-hidden rounded border">
-      <canvas id="qt-canvas" className="block h-full w-full" ref={canvasRef}></canvas>
+      <canvas id="qt-canvas" className="block h-full w-full" ref={qtCanvasRef}></canvas>
     </div>
   );
 };

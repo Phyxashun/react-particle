@@ -1,14 +1,15 @@
 // src/components/Canvas/useParticleSystem.ts
-import { useRef, useEffect } from "react";
-import Vector from "../../lib/Vector";
-import ParticleSystem from "../../lib/ParticleSystem";
-import { buildClasses, makeConfettiClass, PERCEPTION } from "../../lib/decorators";
-import Bounds from "../../lib/Bounds";
-import Rectangle from "../../lib/Rectangle";
-import QuadTree from "../../lib/QuadTree";
-import Particle from "../../lib/Particle";
-import type { ParticleMode } from "../../lib/Mode";
-import type { NavbarStats } from "../Navbar/Navbar";
+import { useRef, useEffect } from 'react';
+import Vector from '../../lib/Vector';
+import ParticleSystem from '../../lib/ParticleSystem';
+import { buildClasses, makeConfettiClass, PERCEPTION } from '../../lib/decorators';
+import Bounds from '../../lib/Bounds';
+import Rectangle from '../../lib/Rectangle';
+import QuadTree from '../../lib/QuadTree';
+import Particle from '../../lib/Particle';
+import type { NavbarStats } from '../Navbar/Navbar';
+import { useMode } from '../LeftPanel/ModeContext';
+import { useQTLiveView } from '../RightPanel/QTLiveViewContext';
 
 export interface LiveViewData {
   quadTree: QuadTree | null;
@@ -16,45 +17,43 @@ export interface LiveViewData {
   bounds: Bounds | null;
 }
 
-interface UseParticleSystemProps {
-  mode: ParticleMode;
+export interface UseParticleSystemProps {
   spawnCount: number;
   spawnSpeed: number;
   showQt: boolean;
   showRadius: boolean;
   onStatsChange: (stats: NavbarStats) => void;
   onActionComplete: () => void;
-  onLiveViewDataChange: (data: LiveViewData) => void;
 }
 
-type ParticleClassMap = ReturnType<typeof buildClasses>;
+export type ParticleClassMap = ReturnType<typeof buildClasses>;
 
-const rand = (a: number, b: number) => a + Math.random() * (b - a);
+export const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
 export const useParticleSystem = (props: UseParticleSystemProps) => {
-  const { onStatsChange, onActionComplete, onLiveViewDataChange } = props;
+  const { onStatsChange, onActionComplete } = props;
+  const { mode } = useMode();
+  const { setLiveViewData } = useQTLiveView();
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const systemRef = useRef<ParticleSystem | null>(null);
-  const particleClassesRef = useRef<ParticleClassMap | null>(null);
-  const animationFrameIdRef = useRef<number | null>(null);
-  const latestPropsRef = useRef(props);
-  const dprRef = useRef(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1);
+  const canvasRef: HTMLCanvasElement = useRef<HTMLCanvasElement>(undefined);
+  const systemRef: ParticleSystem = useRef<ParticleSystem>(undefined);
+  const particleClassesRef: ParticleClassMap = useRef<ParticleClassMap>(undefined);
+  const animationFrameIdRef: number = useRef<number>(undefined);
+  const latestPropsRef: UseParticleSystemProps = useRef(props);
+  const dprRef: number = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
 
   useEffect(() => {
     latestPropsRef.current = props;
   }, [props]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas: HTMLCanvasElement = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
     if (!ctx) return;
 
-    const parent = canvas.parentElement!;
-
     const handleResize = () => {
-      const rect = parent.getBoundingClientRect();
+      const rect = (canvas.parentElement as HTMLElement).getBoundingClientRect();
       dprRef.current = window.devicePixelRatio || 1;
 
       canvas.width = rect.width * dprRef.current;
@@ -65,8 +64,8 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
 
       ctx.scale(dprRef.current, dprRef.current);
 
-      const newBounds = new Bounds(rect.width, rect.height);
-      if (systemRef.current) {
+      const newBounds: Bounds = new Bounds(rect.width, rect.height);
+      if (systemRef.current as ParticleSystem) {
         systemRef.current.resize(newBounds);
       } else {
         systemRef.current = new ParticleSystem(newBounds);
@@ -74,7 +73,7 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
       particleClassesRef.current = buildClasses(newBounds);
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     handleResize();
 
     const getPos = (e: MouseEvent | TouchEvent): [number, number] => {
@@ -82,8 +81,11 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
       if (e instanceof MouseEvent) {
         return [e.clientX - rect.left, e.clientY - rect.top];
       }
-      const touch = e.touches[0];
-      return [touch.clientX - rect.left, touch.clientY - rect.top];
+
+      if (e instanceof TouchEvent) {
+        const touch = e.touches[0];
+        return [touch.clientX - rect.left, touch.clientY - rect.top];
+      }
     };
 
     let isMouseDown = false;
@@ -114,25 +116,25 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
       const particleClasses = particleClassesRef.current;
       if (!system || !particleClasses) return;
 
-      const { mode, spawnSpeed } = latestPropsRef.current;
+      const { spawnSpeed } = latestPropsRef.current;
       const angle = Math.random() * Math.PI * 2;
       const speed = rand(60, 160) * spawnSpeed;
       const vx = Math.cos(angle) * speed;
-      const vy = mode === "spark" ? Math.sin(angle) * speed - 80 : Math.sin(angle) * speed;
+      const vy = mode === 'spark' ? Math.sin(angle) * speed - 80 : Math.sin(angle) * speed;
 
-      const ParticleClass = mode === "confetti" ? makeConfettiClass() : particleClasses[mode];
+      const ParticleClass = mode === 'confetti' ? makeConfettiClass() : particleClasses[mode];
       if (ParticleClass) {
         system.add(new ParticleClass(new Vector(x, y), new Vector(vx, vy)));
       }
     };
 
-    canvas.addEventListener("mousedown", onMouseDown);
-    canvas.addEventListener("mouseup", onMouseUp);
-    canvas.addEventListener("mouseleave", onMouseUp);
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("touchstart", onMouseDown, { passive: false });
-    canvas.addEventListener("touchend", onMouseUp);
-    canvas.addEventListener("touchmove", onMouseMove, { passive: false });
+    canvas.addEventListener('mousedown', onMouseDown);
+    canvas.addEventListener('mouseup', onMouseUp);
+    canvas.addEventListener('mouseleave', onMouseUp);
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('touchstart', onMouseDown, { passive: false });
+    canvas.addEventListener('touchend', onMouseUp);
+    canvas.addEventListener('touchmove', onMouseMove, { passive: false });
 
     let lastTime = performance.now();
     const fpsArr: number[] = [];
@@ -142,12 +144,12 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
       animationFrameIdRef.current = requestAnimationFrame(loop);
       const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
-      const { action, mode, showQt, showRadius } = latestPropsRef.current;
+      const { action, showQt, showRadius } = latestPropsRef.current;
       const system = systemRef.current;
 
       if (action && system) {
-        if (action === "clear") system.clear();
-        if (action === "fill") {
+        if (action === 'clear') system.clear();
+        if (action === 'fill') {
           for (let i = 0; i < 200; i++)
             spawnAt(rand(20, system.bounds.width - 20), rand(20, system.bounds.height - 20));
         }
@@ -160,7 +162,7 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
 
       //const { width, height } = canvas.getBoundingClientRect();
       ctx.save();
-      ctx.fillStyle = "rgba(3,5,13,0.8)";
+      ctx.fillStyle = 'rgba(3,5,13,0.8)';
       //ctx.fillRect(0, 0, width, height);
       ctx.fillRect(0, 0, canvas.width / dprRef.current, canvas.height / dprRef.current);
       ctx.restore();
@@ -176,12 +178,12 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
           const queryBuffer: Particle[] = [];
           system.quadTree.query(
             Rectangle.circle(sampleParticle.position.x, sampleParticle.position.y, perceptionRadius),
-            queryBuffer,
+            queryBuffer
           );
           neighbors = queryBuffer.length;
           if (showRadius) {
             ctx.save();
-            ctx.strokeStyle = "rgba(255,255,255,0.06)";
+            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.arc(sampleParticle.position.x, sampleParticle.position.y, perceptionRadius, 0, Math.PI * 2);
@@ -192,7 +194,7 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
         onStatsChange({ count: system.count, fps, qt: system.quadTree.countNodes(), nb: neighbors });
 
         if (++qtTick % 3 === 0) {
-          onLiveViewDataChange({
+          setLiveViewData({
             quadTree: system.quadTree,
             particles: system.all,
             bounds: system.bounds,
@@ -204,16 +206,16 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
 
     return () => {
       if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
-      window.removeEventListener("resize", handleResize);
-      canvas.removeEventListener("mousedown", onMouseDown);
-      canvas.removeEventListener("mouseup", onMouseUp);
-      canvas.removeEventListener("mouseleave", onMouseUp);
-      canvas.removeEventListener("mousemove", onMouseMove);
-      canvas.removeEventListener("touchstart", onMouseDown);
-      canvas.removeEventListener("touchend", onMouseUp);
-      canvas.removeEventListener("touchmove", onMouseMove);
+      window.removeEventListener('resize', handleResize);
+      canvas.removeEventListener('mousedown', onMouseDown);
+      canvas.removeEventListener('mouseup', onMouseUp);
+      canvas.removeEventListener('mouseleave', onMouseUp);
+      canvas.removeEventListener('mousemove', onMouseMove);
+      canvas.removeEventListener('touchstart', onMouseDown);
+      canvas.removeEventListener('touchend', onMouseUp);
+      canvas.removeEventListener('touchmove', onMouseMove);
     };
-  }, [onActionComplete, onStatsChange, onLiveViewDataChange]);
+  }, [onActionComplete, onStatsChange, setLiveViewData, mode]);
 
   return { canvasRef };
 };
