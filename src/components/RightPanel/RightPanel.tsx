@@ -1,12 +1,10 @@
 // src/components/RightPanel/RightPanel.tsx
 import React from 'react';
-import type { ParticleMode } from '../../lib/Mode';
 import DecoratorStack from './DecoratorStack';
+import QuadTreeLiveView from './MiniMap';
 import PerformanceNote from './PerformanceNote';
-import QuadTreeLiveView from './QuadTreeLiveView';
 
 interface RightPanelProps {
-  mode: ParticleMode;
   showQt: boolean;
 }
 

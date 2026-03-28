@@ -1,5 +1,8 @@
-@import "tailwindcss";
-@plugin "daisyui";
+@import 'tailwindcss';
+@import './base.css';
+@import './panels.css';
+
+@plugin 'daisyui';
 
 @theme {
   --color-bg: var(--color-zinc-950);
@@ -15,6 +18,3 @@
 
   --font-family-mono: var(--font-mono);
 }
-
-@import "./base.css";
-@import "./panels.css";

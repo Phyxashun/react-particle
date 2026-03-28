@@ -5,10 +5,10 @@
  * Physics modifiers that don't require spatial neighbor queries.
  */
 
-import Vector from "../Vector";
-import { type ParticleCtor } from "../Particle";
-import type QuadTree from "../QuadTree";
-import Bounds from "../Bounds";
+import Vector from '../Vector';
+import { type ParticleCtor } from '../Particle';
+import type QuadTree from '../QuadTree';
+import Bounds from '../Bounds';
 
 // @WithGravity
 // Applies a constant gravitational acceleration (px/s²) each frame.
@@ -26,10 +26,7 @@ export function WithGravity(gx = 0, gy = 300) {
 
 // @WithTrail
 // Records the last maxLength positions and draws a fading polyline.
-export function WithTrail(
-  maxLength = 20,
-  trailColor = "rgba(255,255,255,0.15)",
-) {
+export function WithTrail(maxLength = 20, trailColor = 'rgba(255,255,255,0.15)') {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
       constructor(...args: any[]) {
@@ -47,8 +44,8 @@ export function WithTrail(
         if (h.length > 1) {
           ctx.save();
           ctx.lineWidth = this._state.radius ?? 2;
-          ctx.lineCap = "round";
-          ctx.lineJoin = "round";
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
           for (let i = 1; i < h.length; i++) {
             ctx.globalAlpha = (i / h.length) * 0.7;
             ctx.strokeStyle = trailColor;
@@ -77,30 +74,18 @@ export function WithBounce(bounds: Bounds, restitution = 0.75) {
 
         if (this.position.x - r < 0) {
           this.position = new Vector(r, this.position.y);
-          this.velocity = new Vector(
-            -this.velocity.x * restitution,
-            this.velocity.y,
-          );
+          this.velocity = new Vector(-this.velocity.x * restitution, this.velocity.y);
         } else if (this.position.x + r > width) {
           this.position = new Vector(width - r, this.position.y);
-          this.velocity = new Vector(
-            -this.velocity.x * restitution,
-            this.velocity.y,
-          );
+          this.velocity = new Vector(-this.velocity.x * restitution, this.velocity.y);
         }
 
         if (this.position.y - r < 0) {
           this.position = new Vector(this.position.x, r);
-          this.velocity = new Vector(
-            this.velocity.x,
-            -this.velocity.y * restitution,
-          );
+          this.velocity = new Vector(this.velocity.x, -this.velocity.y * restitution);
         } else if (this.position.y + r > height) {
           this.position = new Vector(this.position.x, height - r);
-          this.velocity = new Vector(
-            this.velocity.x,
-            -this.velocity.y * restitution,
-          );
+          this.velocity = new Vector(this.velocity.x, -this.velocity.y * restitution);
         }
       }
     };
@@ -115,14 +100,10 @@ export function WithWrap(bounds: Bounds) {
       update(dt: number, qt?: QuadTree): void {
         super.update(dt, qt);
         const { width, height } = bounds;
-        if (this.position.x < 0)
-          this.position = new Vector(width, this.position.y);
-        if (this.position.x > width)
-          this.position = new Vector(0, this.position.y);
-        if (this.position.y < 0)
-          this.position = new Vector(this.position.x, height);
-        if (this.position.y > height)
-          this.position = new Vector(this.position.x, 0);
+        if (this.position.x < 0) this.position = new Vector(width, this.position.y);
+        if (this.position.x > width) this.position = new Vector(0, this.position.y);
+        if (this.position.y < 0) this.position = new Vector(this.position.x, height);
+        if (this.position.y > height) this.position = new Vector(this.position.x, 0);
       }
     };
 }
@@ -136,8 +117,7 @@ export function WithSpeedLimit(maxSpeed: number) {
       update(dt: number, qt?: QuadTree): void {
         super.update(dt, qt);
         const speed = this.velocity.mag();
-        if (speed > maxSpeed)
-          this.velocity = this.velocity.scale(maxSpeed / speed);
+        if (speed > maxSpeed) this.velocity = this.velocity.scale(maxSpeed / speed);
       }
     };
 }

@@ -1,12 +1,13 @@
 // src/components/RightPanel/QuadTreeLiveView.tsx
-import React, { useRef, useEffect } from 'react';
-import { useQTLiveView } from './QTLiveViewContext';
+import React, { useEffect, useRef } from 'react';
+import { useMiniMap } from './MiniMapContext';
 
-const QuadTreeLiveView: React.FC<QuadTreeLiveViewProps> = () => {
-  const { liveViewData } = useQTLiveView();
+const QuadTreeLiveView: React.FC = () => {
+  const { miniMapData } = useMiniMap();
+  const { quadTree, particles, bounds } = miniMapData!;
 
   const qtCanvasRef = useRef<HTMLCanvasElement>(null);
-  const { quadTree, particles, bounds } = liveViewData;
+  const dprRef = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
 
   useEffect(() => {
     const canvas = qtCanvasRef.current;
@@ -15,13 +16,14 @@ const QuadTreeLiveView: React.FC<QuadTreeLiveViewProps> = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas dimensions based on its display size for high-DPI rendering
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * dpr;
-    canvas.height = canvas.offsetHeight * dpr;
+    dprRef.current = window.devicePixelRatio || 1;
+
+    canvas.width = canvas.offsetWidth * dprRef.current;
+    canvas.height = canvas.offsetHeight * dprRef.current;
 
     const w = canvas.width;
     const h = canvas.height;
+
     const sx = w / (bounds.width || 1);
     const sy = h / (bounds.height || 1);
 
@@ -44,7 +46,7 @@ const QuadTreeLiveView: React.FC<QuadTreeLiveViewProps> = () => {
 
   return (
     <div className="border-base-300 bg-base-100 mb-3.5 aspect-square overflow-hidden rounded border">
-      <canvas id="qt-canvas" className="block h-full w-full" ref={qtCanvasRef}></canvas>
+      <canvas className="block h-full w-full" ref={qtCanvasRef}></canvas>
     </div>
   );
 };

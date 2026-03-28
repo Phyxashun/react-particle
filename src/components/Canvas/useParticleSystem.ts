@@ -1,28 +1,23 @@
 // src/components/Canvas/useParticleSystem.ts
-import { useRef, useEffect } from 'react';
-import Vector from '../../lib/Vector';
-import ParticleSystem from '../../lib/ParticleSystem';
-import { buildClasses, makeConfettiClass, PERCEPTION } from '../../lib/decorators';
+import { useEffect, useRef } from 'react';
 import Bounds from '../../lib/Bounds';
-import Rectangle from '../../lib/Rectangle';
-import QuadTree from '../../lib/QuadTree';
 import Particle from '../../lib/Particle';
-import type { NavbarStats } from '../Navbar/Navbar';
+import ParticleSystem from '../../lib/ParticleSystem';
+import Rectangle from '../../lib/Rectangle';
+import Vector from '../../lib/Vector';
+import { buildClasses, makeConfettiClass, PERCEPTION } from '../../lib/decorators';
 import { useMode } from '../LeftPanel/ModeContext';
-import { useQTLiveView } from '../RightPanel/QTLiveViewContext';
-
-export interface LiveViewData {
-  quadTree: QuadTree | null;
-  particles: Particle[];
-  bounds: Bounds | null;
-}
+import type { StatsDisplayProps } from '../Navbar/StatsDisplay';
+import { useMiniMap } from '../RightPanel/MiniMapContext';
 
 export interface UseParticleSystemProps {
+  action: string | null;
   spawnCount: number;
   spawnSpeed: number;
   showQt: boolean;
   showRadius: boolean;
-  onStatsChange: (stats: NavbarStats) => void;
+  showLinks: boolean;
+  onStatsChange: (stats: StatsDisplayProps) => void;
   onActionComplete: () => void;
 }
 
@@ -33,27 +28,30 @@ export const rand = (a: number, b: number) => a + Math.random() * (b - a);
 export const useParticleSystem = (props: UseParticleSystemProps) => {
   const { onStatsChange, onActionComplete } = props;
   const { mode } = useMode();
-  const { setLiveViewData } = useQTLiveView();
+  const { setMiniMapData } = useMiniMap();
 
-  const canvasRef: HTMLCanvasElement = useRef<HTMLCanvasElement>(undefined);
-  const systemRef: ParticleSystem = useRef<ParticleSystem>(undefined);
-  const particleClassesRef: ParticleClassMap = useRef<ParticleClassMap>(undefined);
-  const animationFrameIdRef: number = useRef<number>(undefined);
-  const latestPropsRef: UseParticleSystemProps = useRef(props);
-  const dprRef: number = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const systemRef = useRef<ParticleSystem>(undefined);
+  const particleClassesRef = useRef<ParticleClassMap>(undefined);
+  const animationFrameIdRef = useRef<number>(undefined);
+  const latestPropsRef = useRef(props);
+  const dprRef = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
 
   useEffect(() => {
     latestPropsRef.current = props;
   }, [props]);
 
   useEffect(() => {
-    const canvas: HTMLCanvasElement = canvasRef.current;
+    const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const parent: HTMLElement = canvas.parentElement as HTMLElement;
+
     const handleResize = () => {
-      const rect = (canvas.parentElement as HTMLElement).getBoundingClientRect();
+      const rect = parent.getBoundingClientRect();
+
       dprRef.current = window.devicePixelRatio || 1;
 
       canvas.width = rect.width * dprRef.current;
@@ -64,8 +62,9 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
 
       ctx.scale(dprRef.current, dprRef.current);
 
-      const newBounds: Bounds = new Bounds(rect.width, rect.height);
-      if (systemRef.current as ParticleSystem) {
+      const newBounds: Bounds = new Bounds(canvas.width, canvas.height);
+
+      if (systemRef.current) {
         systemRef.current.resize(newBounds);
       } else {
         systemRef.current = new ParticleSystem(newBounds);
@@ -78,11 +77,10 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
 
     const getPos = (e: MouseEvent | TouchEvent): [number, number] => {
       const rect = canvas.getBoundingClientRect();
+
       if (e instanceof MouseEvent) {
         return [e.clientX - rect.left, e.clientY - rect.top];
-      }
-
-      if (e instanceof TouchEvent) {
+      } else {
         const touch = e.touches[0];
         return [touch.clientX - rect.left, touch.clientY - rect.top];
       }
@@ -122,7 +120,8 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
       const vx = Math.cos(angle) * speed;
       const vy = mode === 'spark' ? Math.sin(angle) * speed - 80 : Math.sin(angle) * speed;
 
-      const ParticleClass = mode === 'confetti' ? makeConfettiClass() : particleClasses[mode];
+      const ParticleClass =
+        mode === 'confetti' ? makeConfettiClass() : particleClasses[mode as keyof typeof particleClasses];
       if (ParticleClass) {
         system.add(new ParticleClass(new Vector(x, y), new Vector(vx, vy)));
       }
@@ -194,7 +193,7 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
         onStatsChange({ count: system.count, fps, qt: system.quadTree.countNodes(), nb: neighbors });
 
         if (++qtTick % 3 === 0) {
-          setLiveViewData({
+          setMiniMapData({
             quadTree: system.quadTree,
             particles: system.all,
             bounds: system.bounds,
@@ -215,7 +214,7 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
       canvas.removeEventListener('touchend', onMouseUp);
       canvas.removeEventListener('touchmove', onMouseMove);
     };
-  }, [onActionComplete, onStatsChange, setLiveViewData, mode]);
+  }, [onActionComplete, onStatsChange, setMiniMapData, mode]);
 
   return { canvasRef };
 };

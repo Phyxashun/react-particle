@@ -1,29 +1,17 @@
 // src/components/Canvas/Canvas.tsx
-import React from 'react';
-import { useParticleSystem } from './useParticleSystem';
-import type { NavbarStats } from '../Navbar/Navbar';
 import { StarIcon } from '@heroicons/react/24/solid';
+import React from 'react';
 import { useMode } from '../LeftPanel/ModeContext';
+import { useParticleSystem, type UseParticleSystemProps } from './useParticleSystem';
 
-interface CanvasProps {
-  spawnCount: number;
-  spawnSpeed: number;
-  showQt: boolean;
-  showRadius: boolean;
-  showLinks: boolean;
-  action: string | null;
-  onActionComplete: () => void;
-  onStatsChange: (stats: NavbarStats) => void;
-}
-
-const Canvas: React.FC<CanvasProps> = (props) => {
+const Canvas: React.FC<UseParticleSystemProps> = (props) => {
   const { canvasRef } = useParticleSystem(props);
   const { mode } = useMode();
 
   return (
     <>
       {/* CANVAS */}
-      <canvas id="c" className="block h-full w-full cursor-crosshair bg-[#070711]" ref={canvasRef} />
+      <canvas className="block h-full w-full cursor-crosshair bg-[#070711]" ref={canvasRef} />
 
       {/* CANVAS HINT */}
       <div className="text-base-content/60 pointer-events-none fixed bottom-3 left-1/2 flex -translate-x-1/2 text-center text-xs text-[9.5px] tracking-[0.08em] whitespace-nowrap">

@@ -1,13 +1,13 @@
 // src/App.tsx
-import { useState, useCallback } from 'react';
-import Navbar from './components/Navbar/Navbar';
-import type { StatDisplayProps } from './components/Navbar/StatsDisplay';
+import { useCallback, useState } from 'react';
 import Canvas from './components/Canvas/Canvas';
 import LeftPanel from './components/LeftPanel/LeftPanel';
+import Navbar from './components/Navbar/Navbar';
+import type { StatsDisplayProps } from './components/Navbar/StatsDisplay';
 import RightPanel from './components/RightPanel/RightPanel';
 
 const App = () => {
-  const [stats, setStats] = useState<StatDisplayProps>({
+  const [stats, setStats] = useState<StatsDisplayProps>({
     count: 0,
     fps: 0,
     qt: 0,
@@ -21,8 +21,8 @@ const App = () => {
   const [showLinks, setShowLinks] = useState(true);
   const [canvasAction, setCanvasAction] = useState<string | null>(null);
 
-  const handleStatsChange = useCallback((newStats: StatDisplayProps) => {
-    setStats(newStats);
+  const handleStatsChange = useCallback((newStats: StatsDisplayProps) => {
+    setStats({ count: newStats.count, fps: newStats.fps, qt: newStats.qt, nb: newStats.nb });
   }, []);
 
   const handleActionComplete = useCallback(() => {
@@ -31,7 +31,7 @@ const App = () => {
 
   return (
     <div className="flex-none overflow-hidden">
-      <Navbar stats={stats} />
+      <Navbar {...stats} />
       <div className="flex h-screen w-full">
         <div className="w-48.75 flex-none">
           <LeftPanel

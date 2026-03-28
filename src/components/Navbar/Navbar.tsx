@@ -11,7 +11,9 @@ const Navbar: React.FC<StatsDisplayProps> = (stats: StatsDisplayProps) => {
         <Title />
 
         {/* Right Side */}
-        <StatsDisplay stats={stats} />
+        <div className="flex flex-none">
+          <StatsDisplay {...stats} />
+        </div>
       </nav>
     </header>
   );

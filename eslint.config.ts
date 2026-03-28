@@ -1,22 +1,22 @@
 // eslint.config.ts
-import globals from "globals";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import eslintReact from "@eslint-react/eslint-plugin";
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
-import { defineConfig, globalIgnores } from "eslint/config";
+import eslintReact from '@eslint-react/eslint-plugin';
+import js from '@eslint/js';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(["dist", "node_modules", "bin", "out"]),
+  globalIgnores(['dist', 'node_modules', 'bin', 'out']),
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ['**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
-      eslintReact.configs["recommended-typescript"],
+      eslintReact.configs['recommended-typescript'],
     ],
 
     // Configure language/parsing options
@@ -28,13 +28,20 @@ export default defineConfig([
       parserOptions: {
         // Enable project service for better TypeScript integration
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: import.meta.dir,
       },
     },
 
     // Custom rule overrides (modify rule levels or disable rules)
     rules: {
-      "@eslint-react/no-missing-key": "warn",
+      '@eslint-react/no-missing-key': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
     },
   },
 ]);

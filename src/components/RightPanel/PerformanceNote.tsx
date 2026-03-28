@@ -1,12 +1,12 @@
 // src/components/RightPanel/PerformanceNote.tsx
-import React from 'react';
-import { useMode } from '../LeftPanel/ModeContext';
-import MODES from '../../lib/Mode';
 import parse from 'html-react-parser';
+import React from 'react';
+import MODES from '../../lib/Mode';
+import { useMode } from '../LeftPanel/ModeContext';
 
 const PerformanceNote: React.FC = () => {
   const { mode } = useMode();
-  const note = MODES[mode]?.perfNote;
+  const note = MODES[mode!]?.perfNote;
   if (!note) return null;
 
   return (

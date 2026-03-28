@@ -34,16 +34,9 @@
  * WithLinkDraw    → Constellation ← primary showcase
  */
 
-import Particle from "./Particle";
-import Bounds from "./Bounds";
-import {
-  WithSize,
-  WithColor,
-  WithLifetime,
-  WithFade,
-  WithGlow,
-  WithShrink,
-} from "./Decorators/base";
+import Particle from './Particle';
+import Bounds from './Bounds';
+import { WithSize, WithColor, WithLifetime, WithFade, WithGlow, WithShrink } from './Decorators/base';
 import {
   WithTrail,
   WithBounce,
@@ -52,19 +45,11 @@ import {
   WithDrag,
   WithRotation,
   WithGravity,
-} from "./Decorators/motion";
-import {
-  WithRepulsion,
-  WithAttraction,
-  WithFlocking,
-  WithLinkDraw,
-} from "./Decorators/spatial";
+} from './Decorators/motion';
+import { WithRepulsion, WithAttraction, WithFlocking, WithLinkDraw } from './Decorators/spatial';
 
 /** Compose an array of decorator factories onto a base class. */
-export function applyDecorators<T extends typeof Particle>(
-  decorators: Array<(Base: any) => any>,
-  Base: T,
-): T {
+export function applyDecorators<T extends typeof Particle>(decorators: Array<(Base: any) => any>, Base: T): T {
   return decorators.reduceRight((cls, dec) => dec(cls), Base) as T;
 }
 
@@ -79,13 +64,13 @@ export function makeSparkClass() {
       WithFade(),
       WithShrink(),
       WithGravity(0, 420),
-      WithTrail(16, "rgba(255,160,40,0.18)"),
-      WithGlow("orange", 9),
+      WithTrail(16, 'rgba(255,160,40,0.18)'),
+      WithGlow('orange', 9),
       WithColor(255, 160, 40),
       WithLifetime(0.8),
       WithSize(2.5),
     ],
-    Particle,
+    Particle
   );
 }
 
@@ -96,14 +81,8 @@ export function makeSparkClass() {
 
 export function makeBubbleClass() {
   return applyDecorators(
-    [
-      WithFade(),
-      WithGlow("rgba(100,200,255,1)", 22),
-      WithColor(80, 180, 255, 0.65),
-      WithLifetime(3.5),
-      WithSize(16),
-    ],
-    Particle,
+    [WithFade(), WithGlow('rgba(100,200,255,1)', 22), WithColor(80, 180, 255, 0.65), WithLifetime(3.5), WithSize(16)],
+    Particle
   );
 }
 
@@ -113,14 +92,14 @@ export function makeBubbleClass() {
 // ALSO:    @WithGravity · @WithFade · @WithLifetime
 // NOTE:    Returns a factory so each instance picks a random color.
 
-const confetti: Array<string> = [
+/* const confetti: Array<string> = [
   "rgb(55, 80, 120)",
   "rgb(80, 210, 120)",
   "rgb(80, 150, 255)",
   "rgb(255, 200, 60)",
   "rgb(200, 80, 255)",
   "rgb(255, 130, 60)",
-];
+]; */
 
 const CONFETTI_COLORS: Array<[number, number, number]> = [
   [255, 80, 120],
@@ -132,19 +111,11 @@ const CONFETTI_COLORS: Array<[number, number, number]> = [
 ];
 
 export function makeConfettiClass() {
-  const [r, g, b] =
-    CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+  const [r, g, b] = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
   const spin = Math.PI * (Math.random() > 0.5 ? 2.5 : -2.5);
   return applyDecorators(
-    [
-      WithFade(),
-      WithRotation(spin),
-      WithGravity(0, 220),
-      WithColor(r, g, b),
-      WithLifetime(2.0),
-      WithSize(5),
-    ],
-    Particle,
+    [WithFade(), WithRotation(spin), WithGravity(0, 220), WithColor(r, g, b), WithLifetime(2.0), WithSize(5)],
+    Particle
   );
 }
 
@@ -155,15 +126,8 @@ export function makeConfettiClass() {
 
 export function makeSnowClass() {
   return applyDecorators(
-    [
-      WithFade(),
-      WithDrag(0.94),
-      WithGravity(0, 45),
-      WithColor(220, 235, 255, 0.9),
-      WithLifetime(6),
-      WithSize(3),
-    ],
-    Particle,
+    [WithFade(), WithDrag(0.94), WithGravity(0, 45), WithColor(220, 235, 255, 0.9), WithLifetime(6), WithSize(3)],
+    Particle
   );
 }
 
@@ -178,11 +142,11 @@ export function makeBounceClass(bounds: Bounds) {
       WithSpeedLimit(280),
       WithBounce(bounds, 0.85),
       WithRotation(Math.PI * (Math.random() > 0.5 ? 1.5 : -1.5)),
-      WithGlow("rgba(255,210,80,0.6)", 14),
+      WithGlow('rgba(255,210,80,0.6)', 14),
       WithColor(255, 210, 80),
       WithSize(6),
     ],
-    Particle,
+    Particle
   );
 }
 
@@ -197,11 +161,11 @@ export function makeFlockClass(bounds: Bounds) {
       WithWrap(bounds),
       WithSpeedLimit(200),
       WithFlocking(90, 28, { sep: 2.0, align: 1.2, coh: 1.0 }, 280, 200),
-      WithGlow("rgba(80,200,255,0.5)", 6),
+      WithGlow('rgba(80,200,255,0.5)', 6),
       WithColor(80, 200, 255),
       WithSize(3),
     ],
-    Particle,
+    Particle
   );
 }
 
@@ -214,7 +178,7 @@ export function makeConstellationClass(bounds: Bounds) {
   return applyDecorators(
     [
       WithFade(),
-      WithLinkDraw(110, "rgba(140,185,255,1)", 0.6),
+      WithLinkDraw(110, 'rgba(140,185,255,1)', 0.6),
       WithWrap(bounds),
       WithSpeedLimit(80),
       WithDrag(0.97),
@@ -223,7 +187,7 @@ export function makeConstellationClass(bounds: Bounds) {
       WithLifetime(14),
       WithSize(2),
     ],
-    Particle,
+    Particle
   );
 }
 
@@ -239,11 +203,11 @@ export function makeRepulsorClass(bounds: Bounds) {
       WithSpeedLimit(300),
       WithDrag(0.95),
       WithRepulsion(55, 350),
-      WithGlow("rgba(255,100,180,0.6)", 10),
+      WithGlow('rgba(255,100,180,0.6)', 10),
       WithColor(255, 100, 180),
       WithSize(4),
     ],
-    Particle,
+    Particle
   );
 }
 
@@ -260,12 +224,12 @@ export function makeOrbitalClass(bounds: Bounds) {
       WithDrag(0.96),
       WithRepulsion(40, 600),
       WithAttraction(140, 20, 10),
-      WithTrail(10, "rgba(120,255,180,0.1)"),
-      WithGlow("rgba(120,255,180,0.5)", 8),
+      WithTrail(10, 'rgba(120,255,180,0.1)'),
+      WithGlow('rgba(120,255,180,0.5)', 8),
       WithColor(120, 255, 180),
       WithSize(3),
     ],
-    Particle,
+    Particle
   );
 }
 

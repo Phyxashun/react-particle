@@ -5,7 +5,7 @@ import { useMode } from '../LeftPanel/ModeContext';
 
 const DecoratorStack: React.FC = () => {
   const { mode } = useMode();
-  const stackInfo = MODES[mode];
+  const stackInfo = MODES[mode!];
 
   if (!stackInfo) return null;
 

@@ -1,12 +1,12 @@
 import { createContext, use } from 'react';
 import { type ParticleMode } from '../../lib/Mode';
 
-export const DefaultValue = 'spark';
-
-export const ModeContext = createContext<{
-  mode: string;
+export interface ModeContextProps {
+  mode: string | null;
   setMode: (newMode: ParticleMode) => void;
-}>(DefaultValue);
+}
+
+export const ModeContext = createContext<ModeContextProps | undefined>(undefined);
 
 // Custom hook to consume the context
 export const useMode = () => {

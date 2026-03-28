@@ -7,10 +7,10 @@
  * per-frame heap allocations in the hot path.
  */
 
-import Vector from "../Vector";
-import Particle, { type ParticleCtor } from "../Particle";
-import Rectangle from "../Rectangle";
-import type QuadTree from "../QuadTree";
+import Vector from '../Vector';
+import Particle, { type ParticleCtor } from '../Particle';
+import Rectangle from '../Rectangle';
+import type QuadTree from '../QuadTree';
 
 // @WithRepulsion
 // Pushes away from every neighbor within `radius` px.
@@ -22,10 +22,7 @@ export function WithRepulsion(radius = 60, force = 200) {
         if (qt) {
           const buf = this._state.queryBuffer as Particle[];
           buf.length = 0;
-          qt.query(
-            Rectangle.circle(this.position.x, this.position.y, radius),
-            buf,
-          );
+          qt.query(Rectangle.circle(this.position.x, this.position.y, radius), buf);
 
           for (const other of buf) {
             if (other === (this as unknown as Particle)) continue;
@@ -36,9 +33,7 @@ export function WithRepulsion(radius = 60, force = 200) {
 
             const dist = Math.sqrt(distSq);
             const strength = force * (1 - dist / radius);
-            this.acceleration = this.acceleration.add(
-              new Vector(dx / dist, dy / dist).scale(strength),
-            );
+            this.acceleration = this.acceleration.add(new Vector(dx / dist, dy / dist).scale(strength));
           }
         }
         super.update(dt, qt);
@@ -56,10 +51,7 @@ export function WithAttraction(radius = 120, force = 50, soften = 20) {
         if (qt) {
           const buf = this._state.queryBuffer as Particle[];
           buf.length = 0;
-          qt.query(
-            Rectangle.circle(this.position.x, this.position.y, radius),
-            buf,
-          );
+          qt.query(Rectangle.circle(this.position.x, this.position.y, radius), buf);
 
           for (const other of buf) {
             if (other === (this as unknown as Particle)) continue;
@@ -71,9 +63,7 @@ export function WithAttraction(radius = 120, force = 50, soften = 20) {
             const dist = Math.sqrt(distSq) || 0.01;
             const denom = dist + soften;
             const strength = (force / (denom * denom)) * dist;
-            this.acceleration = this.acceleration.add(
-              new Vector(dx / dist, dy / dist).scale(strength),
-            );
+            this.acceleration = this.acceleration.add(new Vector(dx / dist, dy / dist).scale(strength));
           }
         }
         super.update(dt, qt);
@@ -91,7 +81,7 @@ export function WithFlocking(
   separationRadius = 30,
   weights = { sep: 1.8, align: 1.0, coh: 1.0 },
   maxForce = 300,
-  maxSpeed = 180,
+  maxSpeed = 180
 ) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
@@ -99,14 +89,7 @@ export function WithFlocking(
         if (qt) {
           const buf = this._state.queryBuffer as Particle[];
           buf.length = 0;
-          qt.query(
-            Rectangle.circle(
-              this.position.x,
-              this.position.y,
-              perceptionRadius,
-            ),
-            buf,
-          );
+          qt.query(Rectangle.circle(this.position.x, this.position.y, perceptionRadius), buf);
 
           let sep = Vector.zero();
           let align = Vector.zero();
@@ -145,10 +128,7 @@ export function WithFlocking(
             align = desiredAlign.sub(this.velocity).limit(maxForce);
 
             const target = coh.scale(1 / flockCount);
-            const desiredCoh = target
-              .sub(this.position)
-              .normalize()
-              .scale(maxSpeed);
+            const desiredCoh = target.sub(this.position).normalize().scale(maxSpeed);
             coh = desiredCoh.sub(this.velocity).limit(maxForce);
           }
 
@@ -158,8 +138,7 @@ export function WithFlocking(
             .add(coh.scale(weights.coh));
 
           const speed = this.velocity.mag();
-          if (speed > maxSpeed)
-            this.velocity = this.velocity.scale(maxSpeed / speed);
+          if (speed > maxSpeed) this.velocity = this.velocity.scale(maxSpeed / speed);
         }
         super.update(dt, qt);
       }
@@ -170,11 +149,7 @@ export function WithFlocking(
 // During render, queries _state.qt (cached by the last update call)
 // and draws fading lines to nearby particles.
 // Without the QuadTree this would be O(n²) per render frame.
-export function WithLinkDraw(
-  radius = 100,
-  lineColor = "rgba(150,180,255,1)",
-  lineWidth = 0.8,
-) {
+export function WithLinkDraw(radius = 100, lineColor = 'rgba(150,180,255,1)', lineWidth = 0.8) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
       render(ctx: CanvasRenderingContext2D): void {
@@ -183,10 +158,7 @@ export function WithLinkDraw(
 
         if (qt && buf) {
           buf.length = 0;
-          qt.query(
-            Rectangle.circle(this.position.x, this.position.y, radius),
-            buf,
-          );
+          qt.query(Rectangle.circle(this.position.x, this.position.y, radius), buf);
 
           ctx.save();
           ctx.lineWidth = lineWidth;

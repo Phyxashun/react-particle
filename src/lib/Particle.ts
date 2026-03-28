@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Vector from "./Vector";
-import type QuadTree from "./QuadTree";
+import type QuadTree from './QuadTree';
+import Vector from './Vector';
 
 /**
  * Per-instance state bag shared across all decorator layers.
@@ -62,6 +62,4 @@ export default class Particle {
 }
 
 /** Convenience type used by all decorator factories. */
-export type ParticleCtor<T extends Particle = Particle> = new (
-  ...args: any[]
-) => T;
+export type ParticleCtor<T extends Particle = Particle> = new (...args: any[]) => T;
