@@ -1,11 +1,9 @@
-import Point from "./Point";
-
 /**
  * Axis-aligned bounding box stored as center + half-dimensions.
  * Using half-extents instead of (x, y, w, h) makes intersection
  * and containment checks branch-free.
  */
-export default class Rectangle {
+export default class Rectangle<T extends { x: number; y: number }> {
   public cx: number;
   public cy: number;
   public hw: number;
@@ -15,7 +13,7 @@ export default class Rectangle {
     cx: number, // center x
     cy: number, // center y
     hw: number, // half-width
-    hh: number, // half-height
+    hh: number // half-height
   ) {
     this.cx = cx;
     this.cy = cy;
@@ -23,17 +21,11 @@ export default class Rectangle {
     this.hh = hh;
   }
 
-  public contains(point: Point): boolean {
-    const pt = point.position;
-    return (
-      pt.x >= this.cx - this.hw &&
-      pt.x < this.cx + this.hw &&
-      pt.y >= this.cy - this.hh &&
-      pt.y < this.cy + this.hh
-    );
+  public contains({ x, y }: T): boolean {
+    return x >= this.cx - this.hw && x < this.cx + this.hw && y >= this.cy - this.hh && y < this.cy + this.hh;
   }
 
-  public intersects(other: Rectangle): boolean {
+  public intersects(other: Rectangle<T>): boolean {
     return !(
       other.cx - other.hw >= this.cx + this.hw ||
       other.cx + other.hw <= this.cx - this.hw ||
@@ -43,7 +35,7 @@ export default class Rectangle {
   }
 
   /** Square query region centered at (cx, cy) with half-side r. */
-  static circle(cx: number, cy: number, r: number): Rectangle {
-    return new Rectangle(cx, cy, r, r);
+  static circle(cx: number, cy: number, r: number): Rectangle<{ x: number; y: number }> {
+    return new Rectangle<{ x: number; y: number }>(cx, cy, r, r);
   }
 }

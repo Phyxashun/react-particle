@@ -1,6 +1,11 @@
+* {
+  box-sizing: border-box;
+}
+
 html,
 body {
   height: 100%;
+  width: 100%;
   background: var(--color-black);
   color: var(--color-text);
   font-family: var(--font-mono);
@@ -70,7 +75,7 @@ body {
   color: var(--color-text);
 }
 
-.slider-block input[type="range"] {
+.slider-block input[type='range'] {
   width: 100%;
   accent-color: var(--color-accent);
   cursor: pointer;
@@ -107,7 +112,7 @@ body {
   flex-shrink: 0;
 }
 .toggle-pip::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 11px;
   height: 11px;

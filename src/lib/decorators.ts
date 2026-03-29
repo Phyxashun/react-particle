@@ -34,19 +34,19 @@
  * WithLinkDraw    → Constellation ← primary showcase
  */
 
-import Particle from './Particle';
 import Bounds from './Bounds';
-import { WithSize, WithColor, WithLifetime, WithFade, WithGlow, WithShrink } from './Decorators/base';
+import { WithColor, WithFade, WithGlow, WithLifetime, WithShrink, WithSize } from './Decorators/base';
 import {
-  WithTrail,
   WithBounce,
-  WithWrap,
-  WithSpeedLimit,
   WithDrag,
-  WithRotation,
   WithGravity,
+  WithRotation,
+  WithSpeedLimit,
+  WithTrail,
+  WithWrap,
 } from './Decorators/motion';
-import { WithRepulsion, WithAttraction, WithFlocking, WithLinkDraw } from './Decorators/spatial';
+import { WithAttraction, WithFlocking, WithLinkDraw, WithRepulsion } from './Decorators/spatial';
+import Particle from './Particle';
 
 /** Compose an array of decorator factories onto a base class. */
 export function applyDecorators<T extends typeof Particle>(decorators: Array<(Base: any) => any>, Base: T): T {
@@ -136,7 +136,7 @@ export function makeSnowClass() {
 // PRIMARY: @WithBounce · @WithRotation
 // ALSO:    @WithGlow · @WithSpeedLimit
 
-export function makeBounceClass(bounds: Bounds) {
+export function makeBounceClass(bounds: Bounds<{ x: number; y: number }>) {
   return applyDecorators(
     [
       WithSpeedLimit(280),
@@ -155,7 +155,7 @@ export function makeBounceClass(bounds: Bounds) {
 // PRIMARY: @WithFlocking · @WithWrap
 // ALSO:    @WithSpeedLimit · @WithGlow
 
-export function makeFlockClass(bounds: Bounds) {
+export function makeFlockClass(bounds: Bounds<{ x: number; y: number }>) {
   return applyDecorators(
     [
       WithWrap(bounds),
@@ -174,7 +174,7 @@ export function makeFlockClass(bounds: Bounds) {
 // PRIMARY: @WithLinkDraw · @WithAttraction
 // ALSO:    @WithDrag · @WithWrap · @WithFade · @WithLifetime
 
-export function makeConstellationClass(bounds: Bounds) {
+export function makeConstellationClass(bounds: Bounds<{ x: number; y: number }>) {
   return applyDecorators(
     [
       WithFade(),
@@ -196,7 +196,7 @@ export function makeConstellationClass(bounds: Bounds) {
 // PRIMARY: @WithRepulsion
 // ALSO:    @WithDrag · @WithBounce · @WithSpeedLimit · @WithGlow
 
-export function makeRepulsorClass(bounds: Bounds) {
+export function makeRepulsorClass(bounds: Bounds<{ x: number; y: number }>) {
   return applyDecorators(
     [
       WithBounce(bounds, 0.6),
@@ -216,7 +216,7 @@ export function makeRepulsorClass(bounds: Bounds) {
 // PRIMARY: @WithAttraction + @WithRepulsion (combined)
 // ALSO:    @WithDrag · @WithTrail · @WithBounce · @WithGlow
 
-export function makeOrbitalClass(bounds: Bounds) {
+export function makeOrbitalClass(bounds: Bounds<{ x: number; y: number }>) {
   return applyDecorators(
     [
       WithBounce(bounds, 0.5),
@@ -233,7 +233,7 @@ export function makeOrbitalClass(bounds: Bounds) {
   );
 }
 
-export function buildClasses(b: Bounds) {
+export function buildClasses(b: Bounds<{ x: number; y: number }>) {
   return {
     // Static classes (no runtime bounds needed)
     spark: makeSparkClass(),

@@ -1,12 +1,14 @@
-import Vector from "./Vector";
-import Particle from "./Particle";
+import Particle from './Particle';
+import Vector from './Vector';
 
-export default class Point {
-  public position: Vector;
-  public p: Particle;
+export default class Point<T extends Particle> {
+  public x: number;
+  public y: number;
+  public p: T;
 
-  constructor(position: Vector, p: Particle) {
-    this.position = position;
+  constructor({ x, y }: Vector, p: T) {
+    this.x = x;
+    this.y = y;
     this.p = p;
   }
 }

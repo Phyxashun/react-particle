@@ -35,7 +35,7 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
   const particleClassesRef = useRef<ParticleClassMap>(undefined);
   const animationFrameIdRef = useRef<number>(undefined);
   const latestPropsRef = useRef(props);
-  const dprRef = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
+  //const dprRef = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
 
   useEffect(() => {
     latestPropsRef.current = props;
@@ -52,17 +52,23 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
     const handleResize = () => {
       const rect = parent.getBoundingClientRect();
 
-      dprRef.current = window.devicePixelRatio || 1;
+      //dprRef.current = window.devicePixelRatio || 1;
 
-      canvas.width = rect.width * dprRef.current;
-      canvas.height = rect.height * dprRef.current;
+      canvas.width = rect.width; //* dprRef.current;
+      canvas.height = rect.height; //* dprRef.current;
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const sx = w / (rect.width || 1);
+      const sy = h / (rect.height || 1);
 
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${rect.height}px`;
 
-      ctx.scale(dprRef.current, dprRef.current);
+      ctx.scale(sx, sy);
 
-      const newBounds: Bounds = new Bounds(canvas.width, canvas.height);
+      const newBounds: Bounds<{ x: number; y: number }> = new Bounds(canvas.width, canvas.height);
 
       if (systemRef.current) {
         systemRef.current.resize(newBounds);
@@ -149,8 +155,7 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
       if (action && system) {
         if (action === 'clear') system.clear();
         if (action === 'fill') {
-          for (let i = 0; i < 200; i++)
-            spawnAt(rand(20, system.bounds.width - 20), rand(20, system.bounds.height - 20));
+          for (let i = 0; i < 200; i++) spawnAt(rand(20, system.bounds.w - 20), rand(20, system.bounds.h - 20));
         }
         onActionComplete();
       }
@@ -159,11 +164,12 @@ export const useParticleSystem = (props: UseParticleSystemProps) => {
       if (fpsArr.length > 30) fpsArr.shift();
       const fps = Math.round(fpsArr.reduce((a, b) => a + b, 0) / fpsArr.length);
 
-      //const { width, height } = canvas.getBoundingClientRect();
+      const { width, height } = canvas.getBoundingClientRect();
+
       ctx.save();
       ctx.fillStyle = 'rgba(3,5,13,0.8)';
-      //ctx.fillRect(0, 0, width, height);
-      ctx.fillRect(0, 0, canvas.width / dprRef.current, canvas.height / dprRef.current);
+      ctx.fillRect(0, 0, width, height);
+      //ctx.fillRect(0, 0, canvas.width / dprRef.current, canvas.height / dprRef.current);
       ctx.restore();
 
       if (system) {

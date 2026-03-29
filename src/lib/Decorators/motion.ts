@@ -5,10 +5,10 @@
  * Physics modifiers that don't require spatial neighbor queries.
  */
 
-import Vector from '../Vector';
-import { type ParticleCtor } from '../Particle';
-import type QuadTree from '../QuadTree';
 import Bounds from '../Bounds';
+import Particle, { type ParticleCtor } from '../Particle';
+import type QuadTree from '../QuadTree';
+import Vector from '../Vector';
 
 // @WithGravity
 // Applies a constant gravitational acceleration (px/s²) each frame.
@@ -17,7 +17,7 @@ export function WithGravity(gx = 0, gy = 300) {
   const g = new Vector(gx, gy);
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         this.acceleration = this.acceleration.add(g);
         super.update(dt, qt);
       }
@@ -33,7 +33,7 @@ export function WithTrail(maxLength = 20, trailColor = 'rgba(255,255,255,0.15)')
         super(...args);
         this._state.history = [];
       }
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         const h = this._state.history as Vector[];
         h.push(this.position.clone());
         if (h.length > maxLength) h.shift();
@@ -64,27 +64,27 @@ export function WithTrail(maxLength = 20, trailColor = 'rgba(255,255,255,0.15)')
 // @WithBounce
 // Reflects velocity when the particle hits canvas bounds.
 // restitution < 1 loses energy on each bounce.
-export function WithBounce(bounds: Bounds, restitution = 0.75) {
+export function WithBounce(bounds: Bounds<{ x: number; y: number }>, restitution = 0.75) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         super.update(dt, qt);
-        const { width, height } = bounds;
+        const { w, h } = bounds;
         const r = this._state.radius ?? 4;
 
         if (this.position.x - r < 0) {
           this.position = new Vector(r, this.position.y);
           this.velocity = new Vector(-this.velocity.x * restitution, this.velocity.y);
-        } else if (this.position.x + r > width) {
-          this.position = new Vector(width - r, this.position.y);
+        } else if (this.position.x + r > w) {
+          this.position = new Vector(w - r, this.position.y);
           this.velocity = new Vector(-this.velocity.x * restitution, this.velocity.y);
         }
 
         if (this.position.y - r < 0) {
           this.position = new Vector(this.position.x, r);
           this.velocity = new Vector(this.velocity.x, -this.velocity.y * restitution);
-        } else if (this.position.y + r > height) {
-          this.position = new Vector(this.position.x, height - r);
+        } else if (this.position.y + r > h) {
+          this.position = new Vector(this.position.x, h - r);
           this.velocity = new Vector(this.velocity.x, -this.velocity.y * restitution);
         }
       }
@@ -94,16 +94,16 @@ export function WithBounce(bounds: Bounds, restitution = 0.75) {
 // @WithWrap
 // Toroidal wrapping — particles leaving one edge re-enter from
 // the opposite side. Preferred over WithBounce for flocking.
-export function WithWrap(bounds: Bounds) {
+export function WithWrap(bounds: Bounds<{ x: number; y: number }>) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         super.update(dt, qt);
-        const { width, height } = bounds;
-        if (this.position.x < 0) this.position = new Vector(width, this.position.y);
-        if (this.position.x > width) this.position = new Vector(0, this.position.y);
-        if (this.position.y < 0) this.position = new Vector(this.position.x, height);
-        if (this.position.y > height) this.position = new Vector(this.position.x, 0);
+        const { w, h } = bounds;
+        if (this.position.x < 0) this.position = new Vector(w, this.position.y);
+        if (this.position.x > w) this.position = new Vector(0, this.position.y);
+        if (this.position.y < 0) this.position = new Vector(this.position.x, h);
+        if (this.position.y > h) this.position = new Vector(this.position.x, 0);
       }
     };
 }
@@ -114,7 +114,7 @@ export function WithWrap(bounds: Bounds) {
 export function WithSpeedLimit(maxSpeed: number) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         super.update(dt, qt);
         const speed = this.velocity.mag();
         if (speed > maxSpeed) this.velocity = this.velocity.scale(maxSpeed / speed);
@@ -129,7 +129,7 @@ export function WithSpeedLimit(maxSpeed: number) {
 export function WithDrag(coefficient = 0.98) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         super.update(dt, qt);
         this.velocity = this.velocity.scale(Math.pow(coefficient, dt * 60));
       }
@@ -146,7 +146,7 @@ export function WithRotation(angularVelocity = Math.PI) {
         super(...args);
         this._state.angle = 0;
       }
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         (this._state.angle as number) += angularVelocity * dt;
         super.update(dt, qt);
       }

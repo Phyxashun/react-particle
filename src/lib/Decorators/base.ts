@@ -5,8 +5,8 @@
  * Visual and lifecycle characteristics that don't require a QuadTree.
  */
 
-import { type ParticleCtor } from "../Particle";
-import type QuadTree from "../QuadTree";
+import Particle, { type ParticleCtor } from '../Particle';
+import type QuadTree from '../QuadTree';
 
 // @WithSize
 // Sets the render radius and allocates the shared queryBuffer.
@@ -52,9 +52,9 @@ export function WithLifetime(maxAge: number) {
       get isAlive(): boolean {
         return (this._state.age as number) < maxAge;
       }
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         (this._state.age as number) += dt;
-        super.update(dt, qt);
+        super.update(dt, qt!);
       }
     };
 }
@@ -96,7 +96,7 @@ export function WithShrink() {
 
 // @WithGlow
 // Adds a canvas shadow-blur halo effect.
-export function WithGlow(glowColor = "white", glowSize = 12) {
+export function WithGlow(glowColor = 'white', glowSize = 12) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
       render(ctx: CanvasRenderingContext2D): void {

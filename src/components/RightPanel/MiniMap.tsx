@@ -7,7 +7,7 @@ const QuadTreeLiveView: React.FC = () => {
   const { quadTree, particles, bounds } = miniMapData!;
 
   const qtCanvasRef = useRef<HTMLCanvasElement>(null);
-  const dprRef = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
+  //const dprRef = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
 
   useEffect(() => {
     const canvas = qtCanvasRef.current;
@@ -16,16 +16,16 @@ const QuadTreeLiveView: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    dprRef.current = window.devicePixelRatio || 1;
+    //dprRef.current = window.devicePixelRatio || 1;
 
-    canvas.width = canvas.offsetWidth * dprRef.current;
-    canvas.height = canvas.offsetHeight * dprRef.current;
+    canvas.width = canvas.offsetWidth; //* dprRef.current;
+    canvas.height = canvas.offsetHeight; //* dprRef.current;
 
     const w = canvas.width;
     const h = canvas.height;
 
-    const sx = w / (bounds.width || 1);
-    const sy = h / (bounds.height || 1);
+    const sx = w / (bounds.w || 1);
+    const sy = h / (bounds.h || 1);
 
     ctx.clearRect(0, 0, w, h);
     ctx.save();

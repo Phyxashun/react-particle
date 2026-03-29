@@ -24,7 +24,7 @@ export interface ModeInfo {
   stack: StackEntry[];
   perfNote: string;
   primary: string;
-  makeParticleClass: (bounds: Bounds) => typeof Particle;
+  makeParticleClass: (bounds: Bounds<{ x: number; y: number }>) => typeof Particle;
   getInitialVelocity: (spawnSpeed: number) => Vector;
   perceptionRadius: number;
 }
@@ -47,7 +47,7 @@ const MODES: Record<string, ModeInfo> = {
     perfNote:
       '<b>@WithShrink</b> scales to zero over the lifetime ratio. <b>@WithTrail</b> samples position history each update — no QuadTree needed.',
     perceptionRadius: 0,
-    makeParticleClass: (_bounds: Bounds) => makeSparkClass(),
+    makeParticleClass: (_bounds: Bounds<{ x: number; y: number }>) => makeSparkClass(),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;
@@ -69,7 +69,7 @@ const MODES: Record<string, ModeInfo> = {
     perfNote:
       '<b>@WithGlow</b> sets canvas shadowBlur. Large <b>@WithSize</b> paired with low opacity creates the translucent sphere look.',
     perceptionRadius: 0,
-    makeParticleClass: (_bounds: Bounds) => makeBubbleClass(),
+    makeParticleClass: (_bounds: Bounds<{ x: number; y: number }>) => makeBubbleClass(),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;
@@ -92,7 +92,7 @@ const MODES: Record<string, ModeInfo> = {
       '<b>@WithRotation</b> accumulates _state.angle each frame and replaces the circle render with a rotated square. Each instance picks a random color via its factory.',
     perceptionRadius: 0,
     // Each call returns a NEW class with a freshly randomized color
-    makeParticleClass: (_bounds: Bounds) => makeConfettiClass(),
+    makeParticleClass: (_bounds: Bounds<{ x: number; y: number }>) => makeConfettiClass(),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;
@@ -114,7 +114,7 @@ const MODES: Record<string, ModeInfo> = {
     perfNote:
       '<b>@WithDrag</b> applies velocity *= coef^(dt×60) each frame — frame-rate independent damping. Low gravity (45) + drag (0.94) produces realistic flutter.',
     perceptionRadius: 0,
-    makeParticleClass: (_bounds: Bounds) => makeSnowClass(),
+    makeParticleClass: (_bounds: Bounds<{ x: number; y: number }>) => makeSnowClass(),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;
@@ -136,7 +136,7 @@ const MODES: Record<string, ModeInfo> = {
     perfNote:
       '<b>@WithBounce</b> clamps position to boundary and negates the velocity component scaled by restitution (0.85 = 15% energy loss per bounce). No lifetime — bounces forever.',
     perceptionRadius: 0,
-    makeParticleClass: (bounds: Bounds) => makeBounceClass(bounds),
+    makeParticleClass: (bounds: Bounds<{ x: number; y: number }>) => makeBounceClass(bounds),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;
@@ -158,7 +158,7 @@ const MODES: Record<string, ModeInfo> = {
     perfNote:
       'QuadTree cuts flock neighbor checks from <b>O(n²)</b> → <b>O(n log n)</b>. At 400 particles: ~160k → ~3.6k comparisons per frame.',
     perceptionRadius: 90,
-    makeParticleClass: (bounds: Bounds) => makeFlockClass(bounds),
+    makeParticleClass: (bounds: Bounds<{ x: number; y: number }>) => makeFlockClass(bounds),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;
@@ -183,7 +183,7 @@ const MODES: Record<string, ModeInfo> = {
     perfNote:
       '<b>@WithLinkDraw</b> queries _state.qt during render(). Without the QuadTree, link drawing would be O(n²) per render frame.',
     perceptionRadius: 110,
-    makeParticleClass: (bounds: Bounds) => makeConstellationClass(bounds),
+    makeParticleClass: (bounds: Bounds<{ x: number; y: number }>) => makeConstellationClass(bounds),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;
@@ -206,7 +206,7 @@ const MODES: Record<string, ModeInfo> = {
     perfNote:
       'Repulsion queries only within radius=55px. Dense clusters auto-settle to equilibrium. <b>@WithDrag</b> prevents energy runaway.',
     perceptionRadius: 55,
-    makeParticleClass: (bounds: Bounds) => makeRepulsorClass(bounds),
+    makeParticleClass: (bounds: Bounds<{ x: number; y: number }>) => makeRepulsorClass(bounds),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;
@@ -231,7 +231,7 @@ const MODES: Record<string, ModeInfo> = {
     perfNote:
       'Attraction + Repulsion → natural equilibrium distance (~70px). The QuadTree makes it feasible to run <b>both</b> spatial queries every frame.',
     perceptionRadius: 140,
-    makeParticleClass: (bounds: Bounds) => makeOrbitalClass(bounds),
+    makeParticleClass: (bounds: Bounds<{ x: number; y: number }>) => makeOrbitalClass(bounds),
     getInitialVelocity: (spawnSpeed: number) => {
       const angle = randomAngle();
       const speed = rand(60, 160) * spawnSpeed;

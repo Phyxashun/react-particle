@@ -4,9 +4,9 @@ import type Particle from '../../lib/Particle';
 import type QuadTree from '../../lib/QuadTree';
 
 export interface MiniMapData {
-  quadTree: QuadTree;
+  quadTree: QuadTree<Particle>;
   particles: Particle[];
-  bounds: Bounds;
+  bounds: Bounds<{ x: number; y: number }>;
 }
 
 export interface MiniMapContextProps {

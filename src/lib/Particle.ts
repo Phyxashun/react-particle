@@ -14,7 +14,7 @@ export interface ParticleState {
   angle?: number;
   history?: Vector[];
   radius?: number;
-  quadtree?: QuadTree; // current frame's tree, set by update()
+  quadtree?: QuadTree<Particle>; // current frame's tree, set by update()
   queryBuffer?: Particle[]; // pre-allocated — never reallocated after WithSize init
   [key: string]: unknown;
 }
@@ -46,7 +46,7 @@ export default class Particle {
    * The quadtree built by ParticleSystem is passed in each frame
    * so spatial decorators can query neighbors without O(n²) iteration.
    */
-  update(dt: number, quadtree?: QuadTree): void {
+  update(dt: number, quadtree?: QuadTree<Particle>): void {
     if (quadtree) this._state.quadtree = quadtree;
     this.velocity = this.velocity.add(this.acceleration.scale(dt));
     this.position = this.position.add(this.velocity.scale(dt));

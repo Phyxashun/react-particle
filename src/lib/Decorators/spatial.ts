@@ -7,10 +7,10 @@
  * per-frame heap allocations in the hot path.
  */
 
-import Vector from '../Vector';
 import Particle, { type ParticleCtor } from '../Particle';
-import Rectangle from '../Rectangle';
 import type QuadTree from '../QuadTree';
+import Rectangle from '../Rectangle';
+import Vector from '../Vector';
 
 // @WithRepulsion
 // Pushes away from every neighbor within `radius` px.
@@ -18,7 +18,7 @@ import type QuadTree from '../QuadTree';
 export function WithRepulsion(radius = 60, force = 200) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         if (qt) {
           const buf = this._state.queryBuffer as Particle[];
           buf.length = 0;
@@ -47,7 +47,7 @@ export function WithRepulsion(radius = 60, force = 200) {
 export function WithAttraction(radius = 120, force = 50, soften = 20) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         if (qt) {
           const buf = this._state.queryBuffer as Particle[];
           buf.length = 0;
@@ -85,7 +85,7 @@ export function WithFlocking(
 ) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
-      update(dt: number, qt?: QuadTree): void {
+      update(dt: number, qt?: QuadTree<Particle>): void {
         if (qt) {
           const buf = this._state.queryBuffer as Particle[];
           buf.length = 0;
@@ -153,7 +153,7 @@ export function WithLinkDraw(radius = 100, lineColor = 'rgba(150,180,255,1)', li
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
       render(ctx: CanvasRenderingContext2D): void {
-        const qt = this._state.qt as QuadTree | undefined;
+        const qt = this._state.qt as QuadTree<Particle> | undefined;
         const buf = this._state.queryBuffer as Particle[] | undefined;
 
         if (qt && buf) {

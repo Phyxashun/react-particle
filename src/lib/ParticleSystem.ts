@@ -1,16 +1,16 @@
 // src/lib/ParticleSystem.ts
-import Particle from "./Particle";
-import type Bounds from "./Bounds";
-import QuadTree from "./QuadTree";
-import Rectangle from "./Rectangle";
-import Point from "./Point";
+import type Bounds from './Bounds';
+import Particle from './Particle';
+import Point from './Point';
+import QuadTree from './QuadTree';
+import Rectangle from './Rectangle';
 
 export default class ParticleSystem {
   private particles: Particle[] = [];
-  private quadtree: QuadTree;
-  public bounds: Bounds;
+  private quadtree: QuadTree<Particle>;
+  public bounds: Bounds<{ x: number; y: number }>;
 
-  constructor(bounds: Bounds) {
+  constructor(bounds: Bounds<{ x: number; y: number }>) {
     this.bounds = bounds;
     this.quadtree = this.makeTree(this.bounds);
   }
@@ -28,7 +28,7 @@ export default class ParticleSystem {
     this.particles = [];
   }
 
-  resize(bounds: Bounds): void {
+  resize(bounds: Bounds<{ x: number; y: number }>): void {
     this.bounds = bounds;
     this.quadtree = this.makeTree(bounds);
   }
@@ -53,7 +53,7 @@ export default class ParticleSystem {
     for (const particle of this.particles) particle.render(ctx);
   }
 
-  get quadTree(): QuadTree {
+  get quadTree(): QuadTree<Particle> {
     return this.quadtree;
   }
 
@@ -61,10 +61,10 @@ export default class ParticleSystem {
     return this.particles;
   }
 
-  private makeTree(bounds: Bounds): QuadTree {
-    const w = bounds.width / 2;
-    const h = bounds.height / 2;
+  private makeTree(bounds: Bounds<{ x: number; y: number }>): QuadTree<Particle> {
+    const w = bounds.w / 2;
+    const h = bounds.h / 2;
     const rect = new Rectangle(w, h, w, h);
-    return new QuadTree(rect, 8, 8);
+    return new QuadTree(rect, 24, 12);
   }
 }
