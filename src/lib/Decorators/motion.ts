@@ -139,6 +139,8 @@ export function WithDrag(coefficient = 0.98) {
 // @WithRotation
 // Rotates the particle at a constant angular velocity (rad/s).
 // Renders as a rotated square instead of a circle.
+//
+// ***NOTE: This decorator must be the last decorator ***
 export function WithRotation(angularVelocity = Math.PI) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
@@ -153,6 +155,7 @@ export function WithRotation(angularVelocity = Math.PI) {
       render(ctx: CanvasRenderingContext2D): void {
         const r = this._state.radius ?? 4;
         const angle = (this._state.angle as number) ?? 0;
+        ctx.fillStyle = this._state.color || 'white';
         ctx.save();
         ctx.translate(this.position.x, this.position.y);
         ctx.rotate(angle);

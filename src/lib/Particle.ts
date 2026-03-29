@@ -16,6 +16,7 @@ export interface ParticleState {
   radius?: number;
   quadtree?: QuadTree<Particle>; // current frame's tree, set by update()
   queryBuffer?: Particle[]; // pre-allocated — never reallocated after WithSize init
+  color?: string;
   [key: string]: unknown;
 }
 

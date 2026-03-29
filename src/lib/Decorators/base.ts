@@ -6,7 +6,7 @@
  */
 
 import Particle, { type ParticleCtor } from '../Particle';
-import type QuadTree from '../QuadTree';
+import QuadTree from '../QuadTree';
 
 // @WithSize
 // Sets the render radius and allocates the shared queryBuffer.
@@ -26,12 +26,34 @@ export function WithSize(radius: number) {
 // @WithColor
 // Sets fill and stroke to an RGBA color for the particle and all
 // decorators further up the chain that call super.render().
-export function WithColor(r: number, g: number, b: number, a = 1) {
+// Flexible version of WithColor
+
+const CONFETTI_COLORS: Array<string> = [
+  'rgba(55, 80, 120, 1.0)',
+  'rgba(80, 210, 120, 1.0)',
+  'rgba(80, 150, 255, 1.0)',
+  'rgba(255, 200, 60, 1.0)',
+  'rgba(200, 80, 255, 1.0)',
+  'rgba(255, 130, 60, 1.0)',
+];
+
+export function WithColor(r?: number, g?: number, b?: number, a = 1) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
+      constructor(...args: any[]) {
+        super(...args);
+
+        // If r is missing, pick a random color from your array
+        if (r === undefined) {
+          this._state.color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        } else {
+          this._state.color = `rgba(${r}, ${g}, ${b}, ${a})`;
+        }
+      }
+
       render(ctx: CanvasRenderingContext2D): void {
         ctx.save();
-        ctx.fillStyle = ctx.strokeStyle = `rgba(${r},${g},${b},${a})`;
+        ctx.fillStyle = ctx.strokeStyle = this._state.color as string;
         super.render(ctx);
         ctx.restore();
       }

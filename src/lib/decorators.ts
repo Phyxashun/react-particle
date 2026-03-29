@@ -92,29 +92,11 @@ export function makeBubbleClass() {
 // ALSO:    @WithGravity · @WithFade · @WithLifetime
 // NOTE:    Returns a factory so each instance picks a random color.
 
-/* const confetti: Array<string> = [
-  "rgb(55, 80, 120)",
-  "rgb(80, 210, 120)",
-  "rgb(80, 150, 255)",
-  "rgb(255, 200, 60)",
-  "rgb(200, 80, 255)",
-  "rgb(255, 130, 60)",
-]; */
-
-const CONFETTI_COLORS: Array<[number, number, number]> = [
-  [255, 80, 120],
-  [80, 210, 120],
-  [80, 150, 255],
-  [255, 200, 60],
-  [200, 80, 255],
-  [255, 130, 60],
-];
-
 export function makeConfettiClass() {
-  const [r, g, b] = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+  //const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
   const spin = Math.PI * (Math.random() > 0.5 ? 2.5 : -2.5);
   return applyDecorators(
-    [WithFade(), WithRotation(spin), WithGravity(0, 220), WithColor(r, g, b), WithLifetime(2.0), WithSize(5)],
+    [WithFade(), WithGravity(0, 220), WithLifetime(2.0), WithSize(5), WithColor(), WithRotation(spin)],
     Particle
   );
 }
@@ -139,12 +121,12 @@ export function makeSnowClass() {
 export function makeBounceClass(bounds: Bounds<{ x: number; y: number }>) {
   return applyDecorators(
     [
-      WithSpeedLimit(280),
       WithBounce(bounds, 0.85),
-      WithRotation(Math.PI * (Math.random() > 0.5 ? 1.5 : -1.5)),
+      WithSpeedLimit(280),
       WithGlow('rgba(255,210,80,0.6)', 14),
-      WithColor(255, 210, 80),
+      WithColor(255, 210, 80, 1.0),
       WithSize(6),
+      WithRotation(Math.PI * (Math.random() > 0.5 ? 1.5 : -1.5)),
     ],
     Particle
   );
