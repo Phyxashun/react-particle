@@ -152,18 +152,33 @@ export function WithRotation(angularVelocity = Math.PI) {
         (this._state.angle as number) += angularVelocity * dt;
         super.update(dt, qt);
       }
+
       render(ctx: CanvasRenderingContext2D): void {
-        const r = this._state.radius ?? 4;
         const angle = (this._state.angle as number) ?? 0;
-        ctx.fillStyle = this._state.color || 'white';
         ctx.save();
+        // Move to particle position
         ctx.translate(this.position.x, this.position.y);
+        // Rotate the coordinate system
         ctx.rotate(angle);
-        ctx.beginPath();
-        ctx.rect(-r, -r, r * 2, r * 2);
-        ctx.fill();
+        // Move back so super.render (drawing logic) draws at "0,0" relative to this rotation
+        ctx.translate(-this.position.x, -this.position.y);
+        // Call the rest of the stack (Fade, Shrink, Glow, etc.)
+        super.render(ctx);
         ctx.restore();
-        // Intentionally skip super.render() — shape is fully replaced
       }
+
+      // render(ctx: CanvasRenderingContext2D): void {
+      //   const r = this._state.radius ?? 4;
+      //   const angle = (this._state.angle as number) ?? 0;
+      //   ctx.fillStyle = this._state.color || 'white';
+      //   ctx.save();
+      //   ctx.translate(this.position.x, this.position.y);
+      //   ctx.rotate(angle);
+      //   ctx.beginPath();
+      //   ctx.rect(-r, -r, r * 2, r * 2);
+      //   ctx.fill();
+      //   ctx.restore();
+      //   // Intentionally skip super.render() — shape is fully replaced
+      // }
     };
 }

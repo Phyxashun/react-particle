@@ -130,3 +130,18 @@ export function WithGlow(glowColor = 'white', glowSize = 12) {
       }
     };
 }
+
+// @WithSquare
+export function WithSquare() {
+  return <T extends ParticleCtor>(Base: T) =>
+    class extends Base {
+      render(ctx: CanvasRenderingContext2D): void {
+        const r = this._state.radius ?? 4;
+        ctx.beginPath();
+        // Draw centered at the position (rotation handles the offset)
+        ctx.rect(this.position.x - r, this.position.y - r, r * 2, r * 2);
+        ctx.fill();
+        // Do NOT call super.render() here, or you'll get a circle inside your square
+      }
+    };
+}

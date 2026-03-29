@@ -35,7 +35,7 @@
  */
 
 import Bounds from './Bounds';
-import { WithColor, WithFade, WithGlow, WithLifetime, WithShrink, WithSize } from './Decorators/base';
+import { WithColor, WithFade, WithGlow, WithLifetime, WithShrink, WithSize, WithSquare } from './Decorators/base';
 import {
   WithBounce,
   WithDrag,
@@ -96,7 +96,7 @@ export function makeConfettiClass() {
   //const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
   const spin = Math.PI * (Math.random() > 0.5 ? 2.5 : -2.5);
   return applyDecorators(
-    [WithFade(), WithGravity(0, 220), WithLifetime(2.0), WithSize(5), WithColor(), WithRotation(spin)],
+    [WithFade(), WithRotation(spin), WithColor(), WithSquare(), WithSize(5), WithGravity(0, 220), WithLifetime(2.0)],
     Particle
   );
 }
@@ -127,6 +127,7 @@ export function makeBounceClass(bounds: Bounds<{ x: number; y: number }>) {
       WithColor(255, 210, 80, 1.0),
       WithSize(6),
       WithRotation(Math.PI * (Math.random() > 0.5 ? 1.5 : -1.5)),
+      WithSquare(),
     ],
     Particle
   );
