@@ -23,20 +23,32 @@ const DisplayToggle: React.FC<DisplayToggleProps> = ({
         <legend className="fieldset-legend mt-2 text-[10px] tracking-[0.15em] text-teal-600 uppercase">
           <strong>Display Toggle</strong>
         </legend>
-        <label className={`label toggle-row ${showQt ? 'is-on' : ''}`} onClick={() => onShowQtChange(!showQt)}>
+        <label className={`label toggle-row ${showQt ? 'is-on' : ''}`}>
           <span className="toggle-label">Show QuadTree</span>
-          <input type="checkbox" defaultChecked className="toggle toggle-info" />
+          <input
+            type="checkbox"
+            checked={showQt}
+            onChange={() => onShowQtChange(!showQt)}
+            className="toggle toggle-info"
+          />
         </label>
-        <label
-          className={`label toggle-row ${showRadius ? 'is-on' : ''}`}
-          onClick={() => onShowRadiusChange(!showRadius)}
-        >
+        <label className={`label toggle-row ${showRadius ? 'is-on' : ''}`}>
           <span className="toggle-label">Show Radius</span>
-          <input type="checkbox" defaultChecked className="toggle toggle-info" />
+          <input
+            type="checkbox"
+            checked={showRadius}
+            onChange={() => onShowRadiusChange(!showRadius)}
+            className="toggle toggle-info"
+          />
         </label>
-        <label className={`label toggle-row ${showLinks ? 'is-on' : ''}`} onClick={() => onShowLinksChange(!showLinks)}>
+        <label className={`label toggle-row ${showLinks ? 'is-on' : ''}`}>
           <span className="toggle-label">Trail / Links</span>
-          <input type="checkbox" defaultChecked className="toggle toggle-info" />
+          <input
+            type="checkbox"
+            checked={showLinks}
+            onChange={() => onShowLinksChange(!showLinks)}
+            className="toggle toggle-info"
+          />
         </label>
       </fieldset>
     </>

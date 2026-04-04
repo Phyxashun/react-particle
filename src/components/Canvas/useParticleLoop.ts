@@ -48,7 +48,7 @@ export const useParticleLoop = ({
       const system = engine.systemRef.current;
       if (!system) return;
 
-      const { action, showQt, showRadius } = latestProps.current!;
+      const { action, showQt, showRadius, showLinks } = latestProps.current!;
 
       if (action && action !== lastActionRef.current) {
         lastActionRef.current = action;
@@ -69,9 +69,9 @@ export const useParticleLoop = ({
 
       const fps = Math.round(fpsBuf.reduce((a, b) => a + b, 0) / fpsBuf.length);
 
-      // CLEAR FIRST
+      // CLEAR FIRST — trail/ghost effect when showLinks is on, clean clear when off
       ctx.save();
-      ctx.fillStyle = 'rgba(3,5,13,0.8)';
+      ctx.fillStyle = showLinks ? 'rgba(3,5,13,0.8)' : '#03050d';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.restore();
 

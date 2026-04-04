@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { makeConfettiClass } from '../../lib/decorators';
 import { Random } from '../../lib/Random';
 import Vector from '../../lib/Vector';
@@ -19,10 +19,9 @@ interface UseParticleSpawnerParams {
  * download zip: https://github.com/Phyxashun/react-particle/archive/refs/heads/main.zip
  */
 export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: UseParticleSpawnerParams): void => {
-  const modeRef = useRef(mode);
-
   useEffect(() => {
-    const mode = modeRef.current;
+    // `mode` is in the dep array — the effect re-runs on every mode change,
+    // so the closure always captures the current value directly.
 
     const canvas = canvasRef.current;
     if (!canvas) return;

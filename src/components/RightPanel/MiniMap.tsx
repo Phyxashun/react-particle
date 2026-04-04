@@ -8,13 +8,15 @@ export interface MiniMapProps {
 
 const QuadTreeLiveView: React.FC<MiniMapProps> = ({ className = '' }: MiniMapProps) => {
   const { miniMapData } = useMiniMap();
-  const { quadTree, particles, bounds } = miniMapData!;
 
   const qtCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = qtCanvasRef.current;
-    if (!canvas || !quadTree || !particles || !bounds) return;
+    // miniMapData is null until the first loop tick populates it
+    if (!canvas || !miniMapData) return;
+
+    const { quadTree, particles, bounds } = miniMapData;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -43,7 +45,7 @@ const QuadTreeLiveView: React.FC<MiniMapProps> = ({ className = '' }: MiniMapPro
       ctx.fill();
     }
     ctx.restore();
-  }, [quadTree, particles, bounds]); // Re-draw whenever the live data changes
+  }, [miniMapData]); // Re-draw whenever the live data changes
 
   return (
     <div className={`${className} b-4 flex-col gap-2`}>
