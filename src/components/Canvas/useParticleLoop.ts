@@ -26,6 +26,7 @@ export const useParticleLoop = ({
   setMiniMapData,
 }: UseParticleLoopParams): void => {
   const rafRef = useRef<number>(0);
+  const lastActionRef = useRef<string | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,7 +50,9 @@ export const useParticleLoop = ({
 
       const { action, showQt, showRadius } = latestProps.current!;
 
-      if (action) {
+      if (action && action !== lastActionRef.current) {
+        lastActionRef.current = action;
+
         if (action === 'clear') system.clear();
 
         if (action === 'fill') {
@@ -66,11 +69,24 @@ export const useParticleLoop = ({
 
       const fps = Math.round(fpsBuf.reduce((a, b) => a + b, 0) / fpsBuf.length);
 
+      // CLEAR FIRST
+      ctx.save();
       ctx.fillStyle = 'rgba(3,5,13,0.8)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
 
+      // THEN UPDATE + RENDER
       system.update(dt);
       system.render(ctx, showQt);
+
+      // THEN MINIMAP (unchanged timing)
+      if (++qtTick % 3 === 0) {
+        setMiniMapData({
+          quadTree: system.quadTree,
+          particles: system.all,
+          bounds: system.bounds,
+        });
+      }
 
       let neighbors = 0;
       const perception = PERCEPTION[mode as keyof typeof PERCEPTION] ?? 0;
@@ -97,14 +113,6 @@ export const useParticleLoop = ({
         qt: system.quadTree.countNodes(),
         nb: neighbors,
       });
-
-      if (++qtTick % 3 === 0) {
-        setMiniMapData({
-          quadTree: system.quadTree,
-          particles: system.all,
-          bounds: system.bounds,
-        });
-      }
     };
 
     loop(performance.now());
