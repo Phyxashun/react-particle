@@ -3,7 +3,9 @@ import type Bounds from './Bounds';
 import Particle from './Particle';
 import Point from './Point';
 import QuadTree from './QuadTree';
+import { Random } from './Random';
 import Rectangle from './Rectangle';
+import Vector from './Vector';
 
 export default class ParticleSystem {
   private particles: Particle[] = [];
@@ -16,6 +18,28 @@ export default class ParticleSystem {
   }
 
   add(particle: Particle): this {
+    this.particles.push(particle);
+    return this;
+  }
+
+  get randX() {
+    return Random(0, this.bounds.w);
+  }
+
+  get randY() {
+    return Random(0, this.bounds.h);
+  }
+
+  addRandom(): this {
+    // Get random position
+    const p = new Vector(this.randX, this.randY);
+    // Get random velocity
+    const v = new Vector(this.randX, this.randY);
+    // Set acceleration to zero
+    const a = new Vector(); // zero Vector
+    // Create new particle with random parameters
+    const particle = new Particle(p, v, a);
+    // Add particle to the system
     this.particles.push(particle);
     return this;
   }
@@ -65,6 +89,6 @@ export default class ParticleSystem {
     const w = bounds.w / 2;
     const h = bounds.h / 2;
     const rect = new Rectangle(w, h, w, h);
-    return new QuadTree(rect, 24, 12);
+    return new QuadTree(rect, 4, 32);
   }
 }

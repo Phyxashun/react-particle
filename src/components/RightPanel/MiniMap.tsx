@@ -2,12 +2,15 @@
 import React, { useEffect, useRef } from 'react';
 import { useMiniMap } from './MiniMapContext';
 
-const QuadTreeLiveView: React.FC = () => {
+export interface MiniMapProps {
+  className?: string;
+}
+
+const QuadTreeLiveView: React.FC<MiniMapProps> = ({ className = '' }: MiniMapProps) => {
   const { miniMapData } = useMiniMap();
   const { quadTree, particles, bounds } = miniMapData!;
 
   const qtCanvasRef = useRef<HTMLCanvasElement>(null);
-  //const dprRef = useRef(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
 
   useEffect(() => {
     const canvas = qtCanvasRef.current;
@@ -16,10 +19,8 @@ const QuadTreeLiveView: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    //dprRef.current = window.devicePixelRatio || 1;
-
-    canvas.width = canvas.offsetWidth; //* dprRef.current;
-    canvas.height = canvas.offsetHeight; //* dprRef.current;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
 
     const w = canvas.width;
     const h = canvas.height;
@@ -45,8 +46,12 @@ const QuadTreeLiveView: React.FC = () => {
   }, [quadTree, particles, bounds]); // Re-draw whenever the live data changes
 
   return (
-    <div className="border-base-300 bg-base-100 mb-3.5 aspect-square overflow-hidden rounded border">
-      <canvas className="block h-full w-full" ref={qtCanvasRef}></canvas>
+    <div className={`${className} b-4 flex-col gap-2`}>
+      <p className="mb-1 ml-1 text-[10px] font-black tracking-[0.15em] text-teal-600 uppercase">QuadTree Live View</p>
+      <canvas
+        className="border-base-300 bg-base-100 block aspect-square h-full w-full overflow-hidden rounded border"
+        ref={qtCanvasRef}
+      ></canvas>
     </div>
   );
 };

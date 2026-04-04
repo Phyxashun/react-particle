@@ -139,8 +139,6 @@ export function WithDrag(coefficient = 0.98) {
 // @WithRotation
 // Rotates the particle at a constant angular velocity (rad/s).
 // Renders as a rotated square instead of a circle.
-//
-// ***NOTE: This decorator must be the last decorator ***
 export function WithRotation(angularVelocity = Math.PI) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
@@ -148,6 +146,7 @@ export function WithRotation(angularVelocity = Math.PI) {
         super(...args);
         this._state.angle = 0;
       }
+
       update(dt: number, qt?: QuadTree<Particle>): void {
         (this._state.angle as number) += angularVelocity * dt;
         super.update(dt, qt);
@@ -156,29 +155,11 @@ export function WithRotation(angularVelocity = Math.PI) {
       render(ctx: CanvasRenderingContext2D): void {
         const angle = (this._state.angle as number) ?? 0;
         ctx.save();
-        // Move to particle position
         ctx.translate(this.position.x, this.position.y);
-        // Rotate the coordinate system
         ctx.rotate(angle);
-        // Move back so super.render (drawing logic) draws at "0,0" relative to this rotation
         ctx.translate(-this.position.x, -this.position.y);
-        // Call the rest of the stack (Fade, Shrink, Glow, etc.)
         super.render(ctx);
         ctx.restore();
       }
-
-      // render(ctx: CanvasRenderingContext2D): void {
-      //   const r = this._state.radius ?? 4;
-      //   const angle = (this._state.angle as number) ?? 0;
-      //   ctx.fillStyle = this._state.color || 'white';
-      //   ctx.save();
-      //   ctx.translate(this.position.x, this.position.y);
-      //   ctx.rotate(angle);
-      //   ctx.beginPath();
-      //   ctx.rect(-r, -r, r * 2, r * 2);
-      //   ctx.fill();
-      //   ctx.restore();
-      //   // Intentionally skip super.render() — shape is fully replaced
-      // }
     };
 }

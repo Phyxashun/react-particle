@@ -24,7 +24,7 @@ export default class QuadTree<T extends Particle> {
   private readonly maxDepth: number;
   private readonly depth: number;
 
-  constructor(boundary: Rectangle<Point<T>>, capacity = 24, maxDepth = 12, depth = 0) {
+  constructor(boundary: Rectangle<Point<T>>, capacity = 8, maxDepth = 16, depth = 0) {
     this.boundary = boundary;
     this.capacity = capacity;
     this.maxDepth = maxDepth;

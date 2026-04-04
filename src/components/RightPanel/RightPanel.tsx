@@ -6,28 +6,22 @@ import PerformanceNote from './PerformanceNote';
 
 interface RightPanelProps {
   showQt: boolean;
+  className?: string;
 }
 
-const RightPanel: React.FC<RightPanelProps> = ({ showQt }) => {
+const RightPanel: React.FC<RightPanelProps> = ({ showQt, className = '' }) => {
   return (
-    <aside className="bg-base-200 border-base-300 flex h-screen flex-col border-l px-3 py-3.5">
+    <aside className={`${className} bg-base-200 flex w-65 flex-col`}>
       {showQt && (
-        <div className="mb-4 flex flex-col gap-2">
-          <p className="text-base-content/60 text-[8.5px] tracking-[0.15em] uppercase">QuadTree Live View</p>
-          <div className="w-full">
-            <QuadTreeLiveView />
-          </div>
-        </div>
+        <>
+          <QuadTreeLiveView className="flex-none rounded-md" />
+          <div className="h-6 flex-none"></div>
+        </>
       )}
-
-      {/* Force DecoratorStack to stay within the 205px width */}
-      <div className="flex h-full w-full grow">
-        <DecoratorStack />
-      </div>
-
-      <div className="divider my-2"></div>
-
-      <PerformanceNote />
+      <DecoratorStack className="flex-2 rounded-lg" />
+      <div className="divider"></div>
+      <PerformanceNote className="flex-none rounded-lg" />
+      <div className="h-6 flex-none"></div>
     </aside>
   );
 };

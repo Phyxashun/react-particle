@@ -3,14 +3,20 @@ import React from 'react';
 import MODES from '../../lib/Mode';
 import { useMode } from '../LeftPanel/ModeContext';
 
-const DecoratorStack: React.FC = () => {
+export interface DecoratorStackProps {
+  className?: string;
+}
+
+const DecoratorStack: React.FC<DecoratorStackProps> = ({ className = '' }: DecoratorStackProps) => {
   const { mode } = useMode();
   const stackInfo = MODES[mode!];
 
   if (!stackInfo) return null;
 
   return (
-    <div className={`border-success/15 flex flex-1 flex-col rounded border bg-(--color-bg) px-2.5 py-2 tracking-wider`}>
+    <div
+      className={`${className} border-success/15 flex flex-1 flex-col rounded border bg-(--color-bg) px-2.5 py-2 tracking-wider`}
+    >
       {/* Title Header */}
       <p className="mb-1 ml-1 text-[10px] font-black tracking-[0.15em] text-teal-600 uppercase">Decorator Stack</p>
 

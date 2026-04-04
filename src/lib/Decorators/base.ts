@@ -27,25 +27,24 @@ export function WithSize(radius: number) {
 // Sets fill and stroke to an RGBA color for the particle and all
 // decorators further up the chain that call super.render().
 // Flexible version of WithColor
-
-const CONFETTI_COLORS: Array<string> = [
-  'rgba(55, 80, 120, 1.0)',
-  'rgba(80, 210, 120, 1.0)',
-  'rgba(80, 150, 255, 1.0)',
-  'rgba(255, 200, 60, 1.0)',
-  'rgba(200, 80, 255, 1.0)',
-  'rgba(255, 130, 60, 1.0)',
-];
-
 export function WithColor(r?: number, g?: number, b?: number, a = 1) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
+      private readonly confettiColors: Array<string> = [
+        'rgba(55, 80, 120, 1.0)',
+        'rgba(80, 210, 120, 1.0)',
+        'rgba(80, 150, 255, 1.0)',
+        'rgba(255, 200, 60, 1.0)',
+        'rgba(200, 80, 255, 1.0)',
+        'rgba(255, 130, 60, 1.0)',
+      ];
+
       constructor(...args: any[]) {
         super(...args);
 
         // If r is missing, pick a random color from your array
-        if (r === undefined) {
-          this._state.color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        if (r === undefined && g === undefined && b === undefined) {
+          this._state.color = this.confettiColors[Math.floor(Math.random() * this.confettiColors.length)];
         } else {
           this._state.color = `rgba(${r}, ${g}, ${b}, ${a})`;
         }
@@ -132,6 +131,7 @@ export function WithGlow(glowColor = 'white', glowSize = 12) {
 }
 
 // @WithSquare
+//*** THIS MUST BE LAST TO BE RENDERED CORRECTLY ***
 export function WithSquare() {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {

@@ -6,6 +6,11 @@ import Navbar from './components/Navbar/Navbar';
 import type { StatsDisplayProps } from './components/Navbar/StatsDisplay';
 import RightPanel from './components/RightPanel/RightPanel';
 
+const CanvasActions = {
+  clear: 'clear',
+  fill: 'fill',
+};
+
 const App = () => {
   const [stats, setStats] = useState<StatsDisplayProps>({
     count: 0,
@@ -21,34 +26,36 @@ const App = () => {
   const [showLinks, setShowLinks] = useState(true);
   const [canvasAction, setCanvasAction] = useState<string | null>(null);
 
-  const handleStatsChange = useCallback((newStats: StatsDisplayProps) => {
-    setStats({ count: newStats.count, fps: newStats.fps, qt: newStats.qt, nb: newStats.nb });
-  }, []);
+  const handleStatsChange = useCallback(
+    (newStats: StatsDisplayProps) => {
+      setStats({ count: newStats.count, fps: newStats.fps, qt: newStats.qt, nb: newStats.nb });
+    },
+    [setStats]
+  );
 
   const handleActionComplete = useCallback(() => {
     setCanvasAction(null);
-  }, []);
+  }, [setCanvasAction]);
 
   return (
-    <div className="flex-none overflow-hidden">
-      <Navbar {...stats} />
-      <div className="flex h-screen w-full">
-        <div className="w-48.75 flex-none">
-          <LeftPanel
-            particleCount={particleCount}
-            particleSpeed={particleSpeed}
-            showQt={showQt}
-            showRadius={showRadius}
-            showLinks={showLinks}
-            onParticleCountChange={setParticleCount}
-            onParticleSpeedChange={setParticleSpeed}
-            onShowQtChange={setShowQt}
-            onShowRadiusChange={setShowRadius}
-            onShowLinksChange={setShowLinks}
-            onClearCanvas={() => setCanvasAction('clear')}
-            onFillCanvas={() => setCanvasAction('fill')}
-          />
-        </div>
+    <div className="flex flex-col overflow-hidden">
+      <Navbar className="flex-1" stats={stats} />
+      <div className="flex h-screen w-full flex-row">
+        <LeftPanel
+          showQt={showQt}
+          showRadius={showRadius}
+          showLinks={showLinks}
+          onShowQtChange={setShowQt}
+          onShowRadiusChange={setShowRadius}
+          onShowLinksChange={setShowLinks}
+          particleCount={particleCount}
+          particleSpeed={particleSpeed}
+          onParticleCountChange={setParticleCount}
+          onParticleSpeedChange={setParticleSpeed}
+          onClearCanvas={() => setCanvasAction(CanvasActions.clear)}
+          onFillCanvas={() => setCanvasAction(CanvasActions.fill)}
+          className="p-2"
+        />
         <div className="flex flex-1 items-center justify-center">
           <Canvas
             spawnCount={particleCount}
@@ -61,9 +68,8 @@ const App = () => {
             onActionComplete={handleActionComplete}
           />
         </div>
-        <div className="w-55 flex-none">
-          <RightPanel showQt={showQt} />
-        </div>
+
+        <RightPanel className="p-2" showQt={showQt} />
       </div>
     </div>
   );
