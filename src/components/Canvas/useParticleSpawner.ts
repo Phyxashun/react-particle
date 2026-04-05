@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, type RefObject } from 'react';
 import { makeConfettiClass } from '../../lib/decorators';
 import { Random } from '../../lib/Random';
 import Vector from '../../lib/Vector';
@@ -6,13 +6,15 @@ import type { EngineRefs, LatestPropsRef } from './useParticleEngine';
 import type { UseParticleSystemProps } from './useParticleSystem';
 
 interface UseParticleSpawnerParams {
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  canvasRef: RefObject<HTMLCanvasElement | null>;
   engine: EngineRefs;
   latestProps: LatestPropsRef<UseParticleSystemProps | null>;
   mode: string | null;
 }
 
-export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: UseParticleSpawnerParams): void => {
+export const useParticleSpawner = (props: UseParticleSpawnerParams): void => {
+  const { canvasRef, engine, latestProps, mode } = props;
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -33,7 +35,7 @@ export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: Use
       const speed = Random(60, 160) * spawnSpeed;
 
       const vx = Math.cos(angle) * speed;
-      const vy = mode === 'spark' ? Math.sin(angle) * speed - 80 : Math.sin(angle) * speed;
+      const vy = mode === 'spark' || mode === 'bubble' ? Math.sin(angle) * speed - 80 : Math.sin(angle) * speed;
 
       const ParticleClass = mode === 'confetti' ? makeConfettiClass() : classes[mode as keyof typeof classes];
 
@@ -42,9 +44,6 @@ export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: Use
       }
     };
 
-    // Promoted to window during drag so events are never lost when the cursor
-    // briefly leaves the canvas boundary (which would fire mouseleave and kill
-    // the drag if listeners stayed on the canvas element).
     const onWindowMove = (e: MouseEvent): void => {
       const [x, y] = getMouse(e);
       const { spawnCount } = latestProps.current!;
@@ -60,8 +59,6 @@ export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: Use
     };
 
     const onDown = (e: MouseEvent): void => {
-      // Prevent the browser's native drag / text-selection behavior from
-      // swallowing subsequent mousemove events on the canvas.
       e.preventDefault();
 
       const [x, y] = getMouse(e);
@@ -71,7 +68,6 @@ export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: Use
         spawnAt(x + Random(-10, 10), y + Random(-10, 10));
       }
 
-      // Promote move + release listeners to window for the duration of the drag.
       window.addEventListener('mousemove', onWindowMove);
       window.addEventListener('mouseup', onWindowUp);
     };
@@ -80,7 +76,6 @@ export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: Use
 
     return () => {
       canvas.removeEventListener('mousedown', onDown);
-      // Clean up window listeners if the effect tears down mid-drag.
       window.removeEventListener('mousemove', onWindowMove);
       window.removeEventListener('mouseup', onWindowUp);
     };

@@ -1,15 +1,17 @@
 // src/components/RightPanel/RightPanel.tsx
 import React from 'react';
+import { useDisplay } from '../LeftPanel/DisplayContext';
 import DecoratorStack from './DecoratorStack';
 import QuadTreeLiveView from './MiniMap';
 import PerformanceNote from './PerformanceNote';
 
 interface RightPanelProps {
-  showQt: boolean;
   className?: string;
 }
 
-const RightPanel: React.FC<RightPanelProps> = ({ showQt, className = '' }) => {
+const RightPanel: React.FC<RightPanelProps> = ({ className = '' }) => {
+  const showQt = useDisplay();
+
   return (
     <aside className={`${className} bg-base-200 flex w-65 flex-col`}>
       {showQt && (
