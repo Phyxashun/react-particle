@@ -15,7 +15,7 @@ import Vector from '../Vector';
 // @WithRepulsion
 // Pushes away from every neighbor within `radius` px.
 // Force falls off linearly: strongest at the center, zero at the edge.
-export function WithRepulsion(radius = 60, force = 200) {
+export const WithRepulsion = (radius = 60, force = 200) => {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
       update(dt: number, qt?: QuadTree<Particle>): void {
@@ -39,7 +39,7 @@ export function WithRepulsion(radius = 60, force = 200) {
         super.update(dt, qt);
       }
     };
-}
+};
 
 // @WithAttraction
 // Pulls toward every neighbor within `radius` px.

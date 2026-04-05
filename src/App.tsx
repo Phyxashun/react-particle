@@ -12,6 +12,7 @@ const CanvasActions = {
 };
 
 const App = () => {
+  // navbar stats
   const [stats, setStats] = useState<StatsDisplayProps>({
     count: 0,
     fps: 0,
@@ -19,11 +20,16 @@ const App = () => {
     nb: 0,
   });
 
+  // left panel spawn controls
   const [particleCount, setParticleCount] = useState(10);
   const [particleSpeed, setParticleSpeed] = useState(1.0);
+
+  // left panel display toggles
   const [showQt, setShowQt] = useState(false);
   const [showRadius, setShowRadius] = useState(false);
   const [showLinks, setShowLinks] = useState(true);
+
+  // left panel canvas actions
   const [canvasAction, setCanvasAction] = useState<string | null>(null);
 
   const handleStatsChange = useCallback(

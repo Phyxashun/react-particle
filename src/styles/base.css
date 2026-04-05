@@ -20,36 +20,6 @@ body {
   margin: 8px 0 4px 4px !important;
 }
 
-/* Mode buttons */
-/* w-full text-left bg-transparent border border-base-300 text-base-content/60 text-[11px] px-[10px] py-2 rounded cursor-pointer transition-all duration-[120ms] mb-[2px] block leading-[1.3] hover:border-[#1a2540] hover:text-base-content active-state-classes */
-/*
-.mode-btn {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-dim);
-  font-size: 11px;
-  padding: 8px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: 0.12s;
-  margin-bottom: 2px;
-  display: block;
-  line-height: 1.3;
-}
-.mode-btn:hover {
-  border-color: #1a2540;
-  color: var(--color-text);
-  background: transparent;
-}
-.mode-btn.is-active {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-  background: rgba(56, 200, 168, 0.06);
-}
-*/
-/* mt-0.75 block text-[8.5px] tracking-wider opacity-50 */
 .mode-sub {
   display: block;
   font-size: 8.5px;

@@ -1,8 +1,8 @@
 import React from 'react';
-import CanvasActions from './CanvasActions';
-import DisplayToggle from './DisplayToggle';
+import CanvasActions, { type CanvasActionsProps } from './CanvasActions';
+import DisplayToggle, { type DisplayToggleProps } from './DisplayToggle';
 import ModeSelector from './ModeSelector';
-import SpawnControls from './SpawnControls';
+import SpawnControls, { type SpawnControlsProps } from './SpawnControls';
 
 export interface LeftPanelProps {
   showQt: boolean;
@@ -35,7 +35,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   onFillCanvas,
   className = '',
 }) => {
-  const displayToggleProps = {
+  const displayToggleProps: DisplayToggleProps = {
     showQt: showQt,
     showRadius: showRadius,
     showLinks: showLinks,
@@ -44,17 +44,18 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     onShowLinksChange: onShowLinksChange,
   };
 
-  const spawnControlsProps = {
+  const spawnControlsProps: SpawnControlsProps = {
     particleCount: particleCount,
     particleSpeed: particleSpeed,
     onParticleCountChange: onParticleCountChange,
     onParticleSpeedChange: onParticleSpeedChange,
   };
 
-  const canvasActionsProps = {
+  const canvasActionsProps: CanvasActionsProps = {
     onClearCanvas: onClearCanvas,
     onFillCanvas: onFillCanvas,
   };
+
   return (
     <aside id="left-panel" className={`${className} bg-base-200 flex h-screen w-65 flex-initial flex-col gap-4`}>
       <ModeSelector />
