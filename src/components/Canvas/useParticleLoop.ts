@@ -27,8 +27,8 @@ export const useParticleLoop = ({
   onActionComplete,
   setMiniMapData,
 }: UseParticleLoopParams): void => {
-  const rafRef = useRef<number>(0);
-  const lastActionRef = useRef<string | null>(null);
+  const animationFrameRef = useRef<number>(0);
+  const lastCanvasActionRef = useRef<string | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -42,7 +42,7 @@ export const useParticleLoop = ({
     let qtTick = 0;
 
     const loop = (now: number) => {
-      rafRef.current = requestAnimationFrame(loop);
+      animationFrameRef.current = requestAnimationFrame(loop);
 
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
@@ -52,8 +52,8 @@ export const useParticleLoop = ({
 
       const { action, showQt, showRadius, showLinks } = latestProps.current!;
 
-      if (action && action !== lastActionRef.current) {
-        lastActionRef.current = action;
+      if (action && action !== lastCanvasActionRef.current) {
+        lastCanvasActionRef.current = action;
 
         if (action === 'clear') system.clear();
 
@@ -132,10 +132,10 @@ export const useParticleLoop = ({
       }
 
       onStatsChange({
-        count: system.count,
-        fps,
-        qt: system.quadTree.countNodes(),
-        nb: neighbors,
+        count: { title: 'particles', stat: system.count, color: 'text-teal-400' },
+        fps: { title: 'fps', stat: fps, color: 'text-rose-400' },
+        qt: { title: 'qt nodes', stat: system.quadTree.countNodes(), color: 'text-yellow-300' },
+        nb: { title: 'neighbors', stat: neighbors, color: 'text-blue-400' },
       });
     };
 
@@ -143,8 +143,8 @@ export const useParticleLoop = ({
     // (onStatsChange + setMiniMapData) synchronously inside the effect, which
     // triggers immediate re-renders before React finishes flushing, hitting
     // "Maximum update depth exceeded". RAF defers the first frame safely.
-    rafRef.current = requestAnimationFrame(loop);
+    animationFrameRef.current = requestAnimationFrame(loop);
 
-    return () => cancelAnimationFrame(rafRef.current!);
+    return () => cancelAnimationFrame(animationFrameRef.current!);
   }, [canvasRef, engine, latestProps, mode, onStatsChange, onActionComplete, setMiniMapData]);
 };

@@ -1,12 +1,15 @@
-import React from 'react';
-import StatsDisplay from './StatsDisplay';
+import React, { type PropsWithChildren } from 'react';
+import StatsDisplay from './Stats/StatsDisplay';
 import Title from './Title';
 
 interface NavBarProps {
   className?: string;
 }
 
-const Navbar: React.FC<NavBarProps> = ({ className = '' }) => (
+const Navbar: React.FC<PropsWithChildren<NavBarProps>> = ({
+  className = '',
+  children,
+}: PropsWithChildren<NavBarProps>) => (
   <header className={className}>
     <nav className="navbar text-base-content bg-bg shadow-md">
       {/* Left Side */}
@@ -14,9 +17,8 @@ const Navbar: React.FC<NavBarProps> = ({ className = '' }) => (
       <Title />
 
       {/* Right Side */}
-      <div className="flex flex-none">
-        <StatsDisplay />
-      </div>
+      <StatsDisplay />
+      {children}
     </nav>
   </header>
 );

@@ -11,7 +11,7 @@ import { CanvasActionProvider } from './components/LeftPanel/CanvasActionProvide
 import { DisplayProvider } from './components/LeftPanel/DisplayProvider';
 import { ModeProvider } from './components/LeftPanel/ModeProvider';
 import { SpawnProvider } from './components/LeftPanel/SpawnProvider';
-import { StatsProvider } from './components/Navbar/StatsProvider';
+import { StatsProvider } from './components/Navbar/Stats/StatsProvider.tsx';
 import { MiniMapProvider } from './components/RightPanel/MiniMapProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(

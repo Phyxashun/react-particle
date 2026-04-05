@@ -1,6 +1,6 @@
-import React from "react";
+import type { FC } from 'react';
 
-const Title: React.FC = () => {
+const Title: FC = () => {
   return (
     <div className="flex-1">
       <a className="bg-bg mr-4 ml-2 text-lg" href="#">
