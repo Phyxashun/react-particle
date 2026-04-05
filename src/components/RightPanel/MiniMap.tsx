@@ -1,13 +1,13 @@
 // src/components/RightPanel/QuadTreeLiveView.tsx
 import React, { useEffect, useRef } from 'react';
-import { useMiniMap } from './MiniMapContext';
+import { useMiniMapData } from './MiniMapContext';
 
 export interface MiniMapProps {
   className?: string;
 }
 
 const QuadTreeLiveView: React.FC<MiniMapProps> = ({ className = '' }: MiniMapProps) => {
-  const { miniMapData } = useMiniMap();
+  const miniMapData = useMiniMapData();
 
   const qtCanvasRef = useRef<HTMLCanvasElement>(null);
 

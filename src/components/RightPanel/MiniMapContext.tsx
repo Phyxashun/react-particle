@@ -9,18 +9,14 @@ export interface MiniMapData {
   bounds: Bounds<{ x: number; y: number }>;
 }
 
-export interface MiniMapContextProps {
-  miniMapData: MiniMapData | null;
-  setMiniMapData: (data: MiniMapData) => void;
-}
+// Split into two contexts so consumers of the setter (Canvas/useParticleLoop)
+// don't re-render every time miniMapData changes.
+// MiniMapDataContext   — changes every 3rd frame; only QuadTreeLiveView reads it.
+// MiniMapSetterContext — holds the useState setter, which is stable for the
+//                        component lifetime; Canvas reads only this one.
 
-export const MiniMapContext = createContext<MiniMapContextProps | undefined>(undefined);
+export const MiniMapDataContext = createContext<MiniMapData | null>(null);
+export const MiniMapSetterContext = createContext<(data: MiniMapData) => void>(() => {});
 
-// Custom hook to consume the context
-export const useMiniMap = () => {
-  const context = use(MiniMapContext);
-  if (context === undefined) {
-    throw new Error('useMiniMap must be used within a UseMiniMapContextProvider');
-  }
-  return context;
-};
+export const useMiniMapData = () => use(MiniMapDataContext);
+export const useMiniMapSetter = () => use(MiniMapSetterContext);

@@ -26,8 +26,6 @@ export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: Use
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    let isDown = false;
-
     const getMouse = (e: MouseEvent): [number, number] => {
       const r = canvas.getBoundingClientRect();
       return [e.clientX - r.left, e.clientY - r.top];
@@ -53,20 +51,10 @@ export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: Use
       }
     };
 
-    const onDown = (e: MouseEvent): void => {
-      isDown = true;
-
-      const [x, y] = getMouse(e);
-      const { spawnCount } = latestProps.current!;
-
-      for (let i = 0; i < spawnCount; i++) {
-        spawnAt(x + Random(-10, 10), y + Random(-10, 10));
-      }
-    };
-
-    const onMove = (e: MouseEvent): void => {
-      if (!isDown) return;
-
+    // Promoted to window during drag so events are never lost when the cursor
+    // briefly leaves the canvas boundary (which would fire mouseleave and kill
+    // the drag if listeners stayed on the canvas element).
+    const onWindowMove = (e: MouseEvent): void => {
       const [x, y] = getMouse(e);
       const { spawnCount } = latestProps.current!;
 
@@ -75,20 +63,35 @@ export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: Use
       }
     };
 
-    const onUp = (): void => {
-      isDown = false;
+    const onWindowUp = (): void => {
+      window.removeEventListener('mousemove', onWindowMove);
+      window.removeEventListener('mouseup', onWindowUp);
+    };
+
+    const onDown = (e: MouseEvent): void => {
+      // Prevent the browser's native drag / text-selection behavior from
+      // swallowing subsequent mousemove events on the canvas.
+      e.preventDefault();
+
+      const [x, y] = getMouse(e);
+      const { spawnCount } = latestProps.current!;
+
+      for (let i = 0; i < spawnCount; i++) {
+        spawnAt(x + Random(-10, 10), y + Random(-10, 10));
+      }
+
+      // Promote move + release listeners to window for the duration of the drag.
+      window.addEventListener('mousemove', onWindowMove);
+      window.addEventListener('mouseup', onWindowUp);
     };
 
     canvas.addEventListener('mousedown', onDown);
-    canvas.addEventListener('mousemove', onMove);
-    canvas.addEventListener('mouseup', onUp);
-    canvas.addEventListener('mouseleave', onUp);
 
     return () => {
       canvas.removeEventListener('mousedown', onDown);
-      canvas.removeEventListener('mousemove', onMove);
-      canvas.removeEventListener('mouseup', onUp);
-      canvas.removeEventListener('mouseleave', onUp);
+      // Clean up window listeners if the effect tears down mid-drag.
+      window.removeEventListener('mousemove', onWindowMove);
+      window.removeEventListener('mouseup', onWindowUp);
     };
   }, [canvasRef, engine, latestProps, mode]);
 };

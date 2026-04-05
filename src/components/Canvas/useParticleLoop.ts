@@ -115,7 +115,11 @@ export const useParticleLoop = ({
       });
     };
 
-    loop(performance.now());
+    // Start asynchronously — calling loop() directly here fires setState
+    // (onStatsChange + setMiniMapData) synchronously inside the effect, which
+    // triggers immediate re-renders before React finishes flushing, hitting
+    // "Maximum update depth exceeded". RAF defers the first frame safely.
+    rafRef.current = requestAnimationFrame(loop);
 
     return () => cancelAnimationFrame(rafRef.current!);
   }, [canvasRef, engine, latestProps, mode, onStatsChange, onActionComplete, setMiniMapData]);

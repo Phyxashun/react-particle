@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useMode } from '../LeftPanel/ModeContext';
-import { useMiniMap } from '../RightPanel/MiniMapContext';
+import { useMiniMapSetter } from '../RightPanel/MiniMapContext';
 
 import type { StatsDisplayProps } from '../Navbar/StatsDisplay';
 import { useParticleEngine } from './useParticleEngine';
@@ -20,7 +20,7 @@ export interface UseParticleSystemProps {
 
 export const useParticleSystem = (props: UseParticleSystemProps) => {
   const { mode } = useMode();
-  const { setMiniMapData } = useMiniMap();
+  const setMiniMapData = useMiniMapSetter();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const latestPropsRef = useRef(props);

@@ -50,5 +50,9 @@ export const useParticleEngine = (canvasRef: RefObject<HTMLCanvasElement | null>
     return () => ro.disconnect();
   }, [canvasRef]);
 
-  return { systemRef, classesRef };
+  // Return a stable object reference — a plain `{ systemRef, classesRef }` literal
+  // creates a new object on every render, causing useParticleLoop's effect to
+  // re-run on every parent re-render and restarting the RAF loop each time.
+  const engineRef = useRef<EngineRefs>({ systemRef, classesRef });
+  return engineRef.current; // eslint-disable-line react-hooks/refs
 };
