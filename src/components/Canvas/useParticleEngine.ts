@@ -31,7 +31,7 @@ export const useParticleEngine = (canvasRef: RefObject<HTMLCanvasElement | null>
       canvas.width = rect.width;
       canvas.height = rect.height;
 
-      const bounds = new Bounds(rect.width, rect.height);
+      const bounds = new Bounds(rect.height, rect.width); // Bounds(h, w) — height first
 
       if (!systemRef.current) {
         systemRef.current = new ParticleSystem(bounds);
