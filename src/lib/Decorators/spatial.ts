@@ -146,14 +146,21 @@ export function WithFlocking(
 }
 
 // @WithLinkDraw
-// During render, queries _state.qt (cached by the last update call)
+// During render, queries _state.quadtree (cached by the last update call)
 // and draws fading lines to nearby particles.
 // Without the QuadTree this would be O(n²) per render frame.
+// Respects _state.showLinks — set to false by ParticleSystem.render to hide links.
 export function WithLinkDraw(radius = 100, lineColor = 'rgba(150,180,255,1)', lineWidth = 0.8) {
   return <T extends ParticleCtor>(Base: T) =>
     class extends Base {
       render(ctx: CanvasRenderingContext2D): void {
-        const qt = this._state.qt as QuadTree<Particle> | undefined;
+        // showLinks defaults true so links are visible until explicitly toggled off
+        if (this._state.showLinks === false) {
+          super.render(ctx);
+          return;
+        }
+
+        const qt = this._state.quadtree as QuadTree<Particle> | undefined; // was wrongly _state.qt
         const buf = this._state.queryBuffer as Particle[] | undefined;
 
         if (qt && buf) {

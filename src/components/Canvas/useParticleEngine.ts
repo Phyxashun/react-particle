@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useMemo, useRef, type RefObject } from 'react';
 import Bounds from '../../lib/Bounds';
 import ParticleSystem from '../../lib/ParticleSystem';
 import { buildClasses } from '../../lib/decorators';
@@ -50,9 +50,9 @@ export const useParticleEngine = (canvasRef: RefObject<HTMLCanvasElement | null>
     return () => ro.disconnect();
   }, [canvasRef]);
 
-  // Return a stable object reference — a plain `{ systemRef, classesRef }` literal
-  // creates a new object on every render, causing useParticleLoop's effect to
-  // re-run on every parent re-render and restarting the RAF loop each time.
-  const engineRef = useRef<EngineRefs>({ systemRef, classesRef });
-  return engineRef.current; // eslint-disable-line react-hooks/refs
+  // useMemo with [] gives a stable object reference for the component's lifetime.
+  // useRef({ systemRef, classesRef }).current would work but reads .current during
+  // render, which the react-hooks/refs rule correctly flags. systemRef/classesRef
+  // are themselves stable useRef values so the empty dep array is intentional.
+  return useMemo(() => ({ systemRef, classesRef }), []);
 };

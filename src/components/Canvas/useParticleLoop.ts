@@ -1,7 +1,9 @@
 import { useEffect, useRef, type RefObject } from 'react';
-import { PERCEPTION } from '../../lib/decorators';
+import { makeConfettiClass, PERCEPTION } from '../../lib/decorators';
 import Particle from '../../lib/Particle';
+import { Random } from '../../lib/Random';
 import Rectangle from '../../lib/Rectangle';
+import Vector from '../../lib/Vector';
 import type { MiniMapData } from '../RightPanel/MiniMapContext';
 import type { EngineRefs, LatestPropsRef } from './useParticleEngine';
 import type { UseParticleSystemProps } from './useParticleSystem';
@@ -56,8 +58,22 @@ export const useParticleLoop = ({
         if (action === 'clear') system.clear();
 
         if (action === 'fill') {
-          for (let i = 0; i < 200; i++) {
-            system.addRandom();
+          // addRandom() spawns a bare undecorated Particle with wrong velocities.
+          // Use the current mode's decorated class with proper random velocities.
+          const classes = engine.classesRef.current;
+          if (classes) {
+            for (let i = 0; i < 200; i++) {
+              const x = Random(0, system.bounds.w);
+              const y = Random(0, system.bounds.h);
+              const angle = Random(0, Math.PI * 2);
+              const speed = Random(60, 160);
+              const ParticleClass = mode === 'confetti' ? makeConfettiClass() : classes[mode as keyof typeof classes];
+              if (ParticleClass) {
+                system.add(
+                  new ParticleClass(new Vector(x, y), new Vector(Math.cos(angle) * speed, Math.sin(angle) * speed))
+                );
+              }
+            }
           }
         }
 
@@ -75,9 +91,9 @@ export const useParticleLoop = ({
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.restore();
 
-      // THEN UPDATE + RENDER
+      // THEN UPDATE + RENDER — pass showLinks so WithLinkDraw can respect it
       system.update(dt);
-      system.render(ctx, showQt);
+      system.render(ctx, showQt, showLinks);
 
       // THEN MINIMAP (unchanged timing)
       if (++qtTick % 3 === 0) {
@@ -91,19 +107,27 @@ export const useParticleLoop = ({
       let neighbors = 0;
       const perception = PERCEPTION[mode as keyof typeof PERCEPTION] ?? 0;
 
-      if (system.all.length && perception > 0) {
-        const p = system.all[0];
-        const buf: Particle[] = [];
+      if (perception > 0) {
+        // Count neighbors from particle[0] for the stats display
+        if (system.all.length) {
+          const buf: Particle[] = [];
+          const p0 = system.all[0];
+          system.quadTree.query(Rectangle.circle(p0.position.x, p0.position.y, perception), buf);
+          neighbors = buf.length;
+        }
 
-        system.quadTree.query(Rectangle.circle(p.position.x, p.position.y, perception), buf);
-
-        neighbors = buf.length;
-
+        // Draw perception radius around every particle — was particle[0] only,
+        // and opacity 0.06 was imperceptible. Now 0.18 and all particles.
         if (showRadius) {
-          ctx.beginPath();
-          ctx.arc(p.position.x, p.position.y, perception, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-          ctx.stroke();
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+          ctx.lineWidth = 0.5;
+          for (const p of system.all) {
+            ctx.beginPath();
+            ctx.arc(p.position.x, p.position.y, perception, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.restore();
         }
       }
 

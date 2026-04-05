@@ -72,9 +72,14 @@ export default class ParticleSystem {
     this.particles = this.particles.filter((particle) => particle.isAlive);
   }
 
-  render(ctx: CanvasRenderingContext2D, showQt = false): void {
+  render(ctx: CanvasRenderingContext2D, showQt = false, showLinks = true): void {
     if (showQt) this.quadtree.draw(ctx);
-    for (const particle of this.particles) particle.render(ctx);
+    for (const particle of this.particles) {
+      // Stamp showLinks onto _state each frame so WithLinkDraw can read it
+      // without needing changes to the Particle.render() signature.
+      particle._state.showLinks = showLinks;
+      particle.render(ctx);
+    }
   }
 
   get quadTree(): QuadTree<Particle> {
