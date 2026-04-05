@@ -1,18 +1,9 @@
 import React from 'react';
+import { useSpawn } from './SpawnContext';
 
-export interface SpawnControlsProps {
-  particleCount: number;
-  particleSpeed: number;
-  onParticleCountChange: (count: number) => void;
-  onParticleSpeedChange: (speed: number) => void;
-}
+const SpawnControls: React.FC = () => {
+  const { particleCount, particleSpeed, setParticleCount, setParticleSpeed } = useSpawn();
 
-const SpawnControls: React.FC<SpawnControlsProps> = ({
-  particleCount,
-  particleSpeed,
-  onParticleCountChange,
-  onParticleSpeedChange,
-}: SpawnControlsProps) => {
   return (
     <>
       <p
@@ -30,7 +21,7 @@ const SpawnControls: React.FC<SpawnControlsProps> = ({
           min={1}
           max={40}
           value={particleCount}
-          onChange={(e) => onParticleCountChange(Number(e.target.value))}
+          onChange={(e) => setParticleCount(Number(e.target.value))}
         />
       </div>
       <div className="slider-block">
@@ -43,7 +34,7 @@ const SpawnControls: React.FC<SpawnControlsProps> = ({
           max={3}
           step={0.1}
           value={particleSpeed}
-          onChange={(e) => onParticleSpeedChange(Number(e.target.value))}
+          onChange={(e) => setParticleSpeed(Number(e.target.value))}
         />
       </div>
     </>

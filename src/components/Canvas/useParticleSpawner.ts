@@ -11,23 +11,14 @@ interface UseParticleSpawnerParams {
   latestProps: LatestPropsRef<UseParticleSystemProps | null>;
   mode: string | null;
 }
-/**
- * web address:  https://github.com/Phyxashun/react-particle
- * https git:    https://github.com/Phyxashun/react-particle.git
- * ssh git:      git@github.com:Phyxashun/react-particle.git
- * github cli:   gh repo clone Phyxashun/react-particle
- * download zip: https://github.com/Phyxashun/react-particle/archive/refs/heads/main.zip
- */
+
 export const useParticleSpawner = ({ canvasRef, engine, latestProps, mode }: UseParticleSpawnerParams): void => {
   useEffect(() => {
-    // `mode` is in the dep array — the effect re-runs on every mode change,
-    // so the closure always captures the current value directly.
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const getMouse = (e: MouseEvent): [number, number] => {
-      const r = canvas.getBoundingClientRect();
+      const r: DOMRect = canvas.getBoundingClientRect();
       return [e.clientX - r.left, e.clientY - r.top];
     };
 

@@ -1,22 +1,9 @@
 import React from 'react';
+import { useDisplay } from './DisplayContext';
 
-export interface DisplayToggleProps {
-  showQt: boolean;
-  showRadius: boolean;
-  showLinks: boolean;
-  onShowQtChange: (value: boolean) => void;
-  onShowRadiusChange: (value: boolean) => void;
-  onShowLinksChange: (value: boolean) => void;
-}
+const DisplayToggle: React.FC = () => {
+  const { showQt, showRadius, showLinks, setShowQt, setShowRadius, setShowLinks } = useDisplay();
 
-const DisplayToggle: React.FC<DisplayToggleProps> = ({
-  showQt,
-  showRadius,
-  showLinks,
-  onShowQtChange,
-  onShowRadiusChange,
-  onShowLinksChange,
-}: DisplayToggleProps) => {
   return (
     <>
       <fieldset className="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4">
@@ -25,19 +12,14 @@ const DisplayToggle: React.FC<DisplayToggleProps> = ({
         </legend>
         <label className={`label toggle-row ${showQt ? 'is-on' : ''}`}>
           <span className="toggle-label">Show QuadTree</span>
-          <input
-            type="checkbox"
-            checked={showQt}
-            onChange={() => onShowQtChange(!showQt)}
-            className="toggle toggle-info"
-          />
+          <input type="checkbox" checked={showQt} onChange={() => setShowQt(!showQt)} className="toggle toggle-info" />
         </label>
         <label className={`label toggle-row ${showRadius ? 'is-on' : ''}`}>
           <span className="toggle-label">Show Radius</span>
           <input
             type="checkbox"
             checked={showRadius}
-            onChange={() => onShowRadiusChange(!showRadius)}
+            onChange={() => setShowRadius(!showRadius)}
             className="toggle toggle-info"
           />
         </label>
@@ -46,7 +28,7 @@ const DisplayToggle: React.FC<DisplayToggleProps> = ({
           <input
             type="checkbox"
             checked={showLinks}
-            onChange={() => onShowLinksChange(!showLinks)}
+            onChange={() => setShowLinks(!showLinks)}
             className="toggle toggle-info"
           />
         </label>

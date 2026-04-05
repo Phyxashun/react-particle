@@ -1,4 +1,5 @@
 import React from 'react';
+import { useStatsData } from './StatsContext';
 
 export interface StatsDisplayProps {
   count: number;
@@ -7,7 +8,9 @@ export interface StatsDisplayProps {
   nb: number;
 }
 
-const StatsDisplay: React.FC<StatsDisplayProps> = (stats: StatsDisplayProps) => {
+const StatsDisplay: React.FC = () => {
+  const stats: StatsDisplayProps = useStatsData();
+
   return (
     <div className="flex-none">
       <div className="dropdown-content rounded-box z-1 h-auto w-auto border border-dashed border-slate-700 bg-gray-900 text-center shadow-lg">
